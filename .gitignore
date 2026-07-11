@@ -1,0 +1,42 @@
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# Local dependency/test environments
+backend/.test-deps/
+backend/.venv/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/htmlcov/
+backend/.coverage
+
+frontend/node_modules/
+frontend/.npm-cache/
+frontend/dist/
+frontend/*.log
+frontend/playwright-report/
+frontend/test-results/
+frontend/blob-report/
+
+# Local environment files
+.env
+!.env.example
+backend/.env
+frontend/.env
+
+# Local/provisioned secrets and TLS materials
+secrets/*
+!secrets/.gitkeep
+
+resources/docs/load_validation_phase3b_*.json
+resources/docs/load_validation_phase3b_*.md
+
+# Local database backup artifacts
+backups/*
+!backups/.gitkeep
+
+
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

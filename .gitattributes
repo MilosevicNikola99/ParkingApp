@@ -1,0 +1,35 @@
+# Default: normalize text files in repository to LF
+* text=auto eol=lf
+
+# Windows PowerShell scripts can use CRLF
+*.ps1 text eol=crlf
+
+# Shell scripts must stay LF
+*.sh text eol=lf
+
+# CI / Docker / config files should stay LF
+*.yml text eol=lf
+*.yaml text eol=lf
+Dockerfile text eol=lf
+*.dockerfile text eol=lf
+docker-compose*.yml text eol=lf
+
+# Frontend/backend source
+*.py text eol=lf
+*.js text eol=lf
+*.vue text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.md text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary

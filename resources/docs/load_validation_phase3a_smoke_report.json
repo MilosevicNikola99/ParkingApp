@@ -1,0 +1,149 @@
+{
+  "cleanup": {
+    "attempted": true,
+    "deleted_counts": {
+      "applications": 9,
+      "audit_logs": 4,
+      "availabilities": 2,
+      "parking_spots": 1,
+      "reservations": 3,
+      "teams": 1,
+      "users": 10
+    },
+    "issue": null,
+    "succeeded": true
+  },
+  "completion_classification": "READY",
+  "concurrency": 5,
+  "dataset_sizes": {
+    "applications": 9,
+    "availabilities": 2,
+    "parking_spots": 1,
+    "reservations": 3,
+    "teams": 1,
+    "users": 10
+  },
+  "duration_seconds": 5.565,
+  "ended_at_utc": "2026-06-22T06:49:14.841730+00:00",
+  "invariants": [
+    {
+      "details": {
+        "violation_count": 0
+      },
+      "name": "active_reservation_uniqueness",
+      "passed": true
+    },
+    {
+      "details": {
+        "violation_count": 0
+      },
+      "name": "selected_application_uniqueness",
+      "passed": true
+    },
+    {
+      "details": {
+        "violation_count": 0
+      },
+      "name": "duplicate_application_uniqueness",
+      "passed": true
+    },
+    {
+      "details": {
+        "violation_count": 0
+      },
+      "name": "availability_reservation_state_agreement",
+      "passed": true
+    },
+    {
+      "details": {
+        "violation_count": 0
+      },
+      "name": "cancellation_replacement_history_coherence",
+      "passed": true
+    },
+    {
+      "details": {
+        "actual": 4,
+        "expected": 4
+      },
+      "name": "expected_success_audit_records",
+      "passed": true
+    },
+    {
+      "details": {
+        "violation_count": 0
+      },
+      "name": "orphan_reference_absence",
+      "passed": true
+    }
+  ],
+  "issues": [],
+  "iterations": 1,
+  "latency_ms": {
+    "p50": 47.023,
+    "p95": 254.122,
+    "p99": 333.824
+  },
+  "partial": false,
+  "pool_configuration": {
+    "db_max_overflow": 5,
+    "db_pool_pre_ping": true,
+    "db_pool_recycle_seconds": 1800,
+    "db_pool_size": 5,
+    "db_pool_timeout_seconds": 30.0
+  },
+  "profile": "smoke",
+  "random_seed": 20260622,
+  "request_counts": {
+    "by_classification": {
+      "expected_domain_conflict": 1,
+      "success": 53
+    },
+    "by_operation": {
+      "admin_application_read": 1,
+      "admin_audit_log_read": 1,
+      "admin_auth_me": 1,
+      "admin_login": 1,
+      "admin_manual_override": 1,
+      "admin_replacement_override": 1,
+      "admin_report_applications_csv": 1,
+      "admin_report_audit_logs_csv": 1,
+      "admin_report_parking_spot_usage": 1,
+      "admin_report_reservations_csv": 1,
+      "admin_report_summary": 1,
+      "admin_report_top_users": 1,
+      "admin_reservation_history_read": 1,
+      "assign_availability": 1,
+      "concurrent_application_create": 5,
+      "create_availability_for_assignment": 1,
+      "create_availability_for_override": 1,
+      "create_employee_user": 9,
+      "create_parking_owner_user": 1,
+      "create_parking_spot": 1,
+      "create_team": 1,
+      "duplicate_application_conflict": 1,
+      "employee_login": 9,
+      "employee_reservation_cancel": 1,
+      "employee_reservation_read": 1,
+      "list_available_spots": 1,
+      "list_my_availabilities": 1,
+      "override_candidate_application": 2,
+      "owner_auth_me": 1,
+      "owner_login": 1,
+      "post_cancellation_application": 1,
+      "reassign_availability": 1,
+      "reservation_detail_read": 1
+    },
+    "total": 54
+  },
+  "request_timeout_seconds": 10.0,
+  "started_at_utc": "2026-06-22T06:49:09.277096+00:00",
+  "target": {
+    "host": "localhost",
+    "is_local": true,
+    "non_local_override": false,
+    "port": 8000,
+    "scheme": "http"
+  },
+  "throughput_requests_per_second": 9.704
+}

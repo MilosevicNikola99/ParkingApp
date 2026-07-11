@@ -1,0 +1,7 @@
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "postgres_concurrency: tests that require a disposable PostgreSQL database and exercise concurrent database behavior",
+]

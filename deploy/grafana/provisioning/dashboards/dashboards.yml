@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Parking App
+    orgId: 1
+    folder: Parking App
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

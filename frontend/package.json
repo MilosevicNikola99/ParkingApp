@@ -1,0 +1,31 @@
+{
+  "name": "parking-app-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --configLoader runner",
+    "build": "vite build --configLoader runner",
+    "preview": "vite preview",
+    "test": "vitest run --configLoader runner",
+    "e2e": "playwright test",
+    "e2e:smoke": "playwright test e2e/mvp-smoke.spec.js",
+    "e2e:headed": "playwright test e2e/mvp-smoke.spec.js --headed",
+    "e2e:ui": "playwright test --ui",
+    "e2e:docker": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ..\\scripts\\run_e2e_smoke.ps1",
+    "e2e:user-guide": "playwright test e2e/user-guide-screenshots.spec.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/test-utils": "^2.4.11",
+    "jsdom": "^29.1.1",
+    "vite": "^6.0.7",
+    "vitest": "^4.1.8"
+  }
+}

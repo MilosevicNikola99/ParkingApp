@@ -1,0 +1,57 @@
+name: E2E Smoke
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-smoke:
+    name: Chromium MVP smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Run disposable Docker E2E lifecycle
+        env:
+          E2E_COMPOSE_PROJECT: parkingappe2eci
+          E2E_COMPOSE_COMMAND: docker
+          E2E_CAPTURE_FAILURE_LOGS: "true"
+        run: bash scripts/run_e2e_smoke.sh
+      - name: Verify disposable cleanup
+        if: always()
+        run: |
+          test -z "$(docker compose -p parkingappe2eci ps -aq)"
+          test -z "$(docker volume ls --filter name=parkingappe2eci --quiet)"
+          test -z "$(docker network ls --filter name=parkingappe2eci --quiet)"
+      - name: Upload sanitized E2E failure artifacts
+        if: failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-${{ github.run_id }}
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          if-no-files-found: ignore
+          retention-days: 5
