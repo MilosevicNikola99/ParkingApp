@@ -1,6 +1,6 @@
 from collections.abc import Generator
 
-from jose import jwt
+import jwt
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -15,7 +15,7 @@ from app.services.auth import AuthService
 
 
 TEST_SETTINGS = Settings(
-    jwt_secret_key="auth-service-test-secret",
+    jwt_secret_key="auth-service-test-secret-at-least-32-characters",
     jwt_algorithm="HS256",
     access_token_expire_minutes=15,
 )

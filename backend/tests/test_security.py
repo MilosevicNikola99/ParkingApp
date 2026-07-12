@@ -6,7 +6,7 @@ from app.models.user import UserRole
 
 
 TEST_SETTINGS = Settings(
-    jwt_secret_key="test-secret-key",
+    jwt_secret_key="test-secret-key-at-least-32-characters",
     jwt_algorithm="HS256",
     access_token_expire_minutes=15,
 )
