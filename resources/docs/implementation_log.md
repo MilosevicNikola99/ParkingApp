@@ -9302,3 +9302,69 @@ No unresolved CI limitation remains. Broader production deployment limitations a
 ### Next Suggested Task
 
 Review and merge pull request `#1`. No additional CI fix is required.
+
+## MVP Release Finalization - v1.0.0-mvp
+
+### Task Name
+
+Prepare the ParkingApp MVP release finalization.
+
+### Release Version
+
+- Version: 1.0.0-mvp
+- Intended annotated tag: v1.0.0-mvp
+- Release title: ParkingApp v1.0.0 MVP
+- Baseline before release documentation: cf041bea977020c9eef1de22be6485d1ac7c27ef, the merge of PR #1 into main.
+
+### Files Changed
+
+- CHANGELOG.md
+- README.md
+- frontend/package.json
+- frontend/package-lock.json
+- resources/docs/release_notes_v1.0.0-mvp.md
+- resources/docs/developer_handoff.md
+- resources/docs/implementation_log.md
+
+### Release Content
+
+- Added the first MVP changelog entry with Added, Changed, Security, Verification, and Known Limitations sections.
+- Added copy-ready release notes and GitHub Release draft text.
+- Updated the existing frontend package version reference to 1.0.0-mvp.
+- Added concise README and developer-handoff release status.
+- Documented local runtime, deployment prerequisites, Alembic head 0010, and post-MVP recommendations.
+
+### CI And GitHub Actions Status
+
+- PR #1 is merged into main.
+- Hosted backend quality, PostgreSQL concurrency, frontend quality, Compose/image validation, and Chromium E2E were passing before release finalization.
+- CI run 29187865561 and E2E run 29187865548 passed on the functional fix.
+- Final documentation follow-up CI run 29188011034 and E2E run 29188011039 also passed.
+- Release PR #2 CI run 29188575812 and E2E Smoke run 29188575807 passed for release commit 9d0dcff9f4f4b3014dc497cb0369aa1b56d28538.
+- Release finalization changes contain documentation and package-version metadata only; no product behavior, schema, migration, CI, Docker, or deployment behavior changed.
+
+### Tag Preparation Status
+
+- Local and remote v1.0.0-mvp did not exist when checked.
+- The tag was not created or pushed because explicit tag-creation permission was not provided.
+- After this release commit is merged to a clean, current main, run:
+  - git tag -a v1.0.0-mvp -m "ParkingApp v1.0.0 MVP"
+  - git push origin v1.0.0-mvp
+- Never move or recreate the published tag.
+
+### Verification
+
+- main matched origin/main at cf041bea977020c9eef1de22be6485d1ac7c27ef before editing.
+- Working tree was clean before release preparation.
+- CI workflow files were present.
+- Markdown structure, intended-file staging, secret patterns, generated artifacts, frontend tests, and frontend production build are verified below before commit.
+
+### Known Limitations
+
+- No production deployment or Docker image publication is part of this release.
+- Deployment operators must provide real secrets, TLS certificates, scheduler orchestration, backup operations, monitoring/alerting, and environment-specific validation.
+- SSO/OIDC, notifications, scheduled reports, and external observability integrations remain post-MVP work.
+
+### Next Suggested Task
+
+Review and merge the release/v1.0.0-mvp branch. From the resulting clean and current main, create and push the annotated v1.0.0-mvp tag, then publish the prepared GitHub Release text without deploying or publishing images.

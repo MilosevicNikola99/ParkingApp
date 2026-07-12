@@ -4,6 +4,8 @@
 
 The application has an MVP backend, Vue frontend, local Docker Compose setup, PostgreSQL migrations through Alembic, local admin seeding, and smoke verification coverage. The current migration head is expected to be `0010`.
 
+Release `v1.0.0-mvp` is the completed MVP baseline. Hosted backend, PostgreSQL concurrency, frontend, Compose/image, dependency-audit, and Chromium E2E checks pass. Production deployment is not included; the next work should focus on environment-specific secrets and TLS, scheduler orchestration, backup operations, monitoring/alerting, and deployment validation.
+
 This document summarizes the architecture, implemented workflows, operational commands, and remaining limitations for the next developer.
 
 ## Architecture Overview

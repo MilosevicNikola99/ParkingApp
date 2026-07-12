@@ -2,6 +2,14 @@
 
 FastAPI and Vue application for managing employee parking availability, applications, reservations, assignment decisions, admin operations, and reporting.
 
+## Release Status
+
+- MVP release: `v1.0.0-mvp`
+- Hosted CI: passing
+- Alembic head: `0010`
+- Local runtime: Docker Compose
+- Production deployment: not included in the MVP release
+
 ## Stack
 
 - Backend: Python, FastAPI, SQLAlchemy, Pydantic v2, Alembic, PostgreSQL, JWT authentication.
