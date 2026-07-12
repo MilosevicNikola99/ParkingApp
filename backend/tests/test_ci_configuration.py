@@ -67,6 +67,23 @@ def test_ci_workflows_cover_required_quality_and_e2e_commands() -> None:
     assert "frontend/test-results/" in e2e_text
 
 
+def test_postgres_concurrency_junit_check_aggregates_nested_suites() -> None:
+    ci_text = CI_WORKFLOW.read_text(encoding="utf-8")
+
+    assert "root.findall('testsuite')" in ci_text
+    assert "('tests', 'skipped', 'failures', 'errors')" in ci_text
+    assert "counts['tests'] > 0" in ci_text
+    assert "counts['skipped'] == counts['failures'] == counts['errors'] == 0" in ci_text
+
+
+def test_backup_script_tests_select_cross_platform_powershell() -> None:
+    test_module = (ROOT_DIR / "backend" / "tests" / "test_postgres_backup_scripts.py").read_text(
+        encoding="utf-8",
+    )
+
+    assert 'shutil.which("powershell.exe") or shutil.which("pwsh")' in test_module
+
+
 def test_ci_uses_only_official_pinned_major_actions() -> None:
     workflow_text = CI_WORKFLOW.read_text(encoding="utf-8") + E2E_WORKFLOW.read_text(encoding="utf-8")
     action_references = [

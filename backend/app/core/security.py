@@ -1,6 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import ValidationError
 
@@ -60,5 +61,5 @@ def decode_access_token(token: str, settings: Settings | None = None) -> TokenPa
             algorithms=[resolved_settings.jwt_algorithm],
         )
         return TokenPayload.model_validate(payload)
-    except (JWTError, ValidationError):
+    except (InvalidTokenError, ValidationError):
         return None

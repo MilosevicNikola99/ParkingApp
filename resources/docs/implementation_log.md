@@ -9224,3 +9224,81 @@ Reason: workflow configuration is complete, actionlint/YAML semantics pass, ever
 ### Next Suggested Task
 
 Commit the existing CI files and this contract update into the real GitHub repository, then run both workflows through workflow_dispatch or a pull request. Record hosted job runtimes, cache behavior, cleanup, and failure-artifact behavior; fix only hosted-run environment defects and promote Task 64 to READY after a clean hosted run.
+
+## Task 64 Hosted CI Follow-up - Backend Quality and PostgreSQL Concurrency
+
+### Task Name
+
+Fix hosted GitHub Actions failures for backend quality and PostgreSQL concurrency.
+
+### Hosted Failures
+
+- CI run `29171807508` at commit `bd5839784f32a5976d208f3db79aabb36912d6a4` failed.
+- Backend quality job `86594111448` failed during `Run backend tests`: 11 backup-script tests attempted to launch Windows-only `powershell.exe` on Ubuntu. The remaining result was 715 passed, 21 skipped, two warnings.
+- PostgreSQL concurrency job `86594111430` migrated to `0010` and all 21 concurrency tests passed, but its post-test parser read counters from the `<testsuites>` root instead of the nested `<testsuite>`, producing `(0, 0)`.
+- The first local dependency audit after fixing those failures found patched `pytest` advisory `PYSEC-2026-1845` and unpatched transitive `ecdsa` advisory `PYSEC-2026-1325`. Suppression was not added.
+
+### Files Changed
+
+- `.github/workflows/ci.yml`
+- `backend/app/core/security.py`
+- `backend/requirements.txt`
+- `backend/requirements-dev.txt`
+- `backend/tests/test_auth_api.py`
+- `backend/tests/test_auth_service.py`
+- `backend/tests/test_ci_configuration.py`
+- `backend/tests/test_postgres_backup_scripts.py`
+- `backend/tests/test_security.py`
+- `resources/docs/ci_pipeline.md`
+- `resources/docs/developer_handoff.md`
+- `resources/docs/implementation_log.md`
+
+### Exact Fix
+
+- PowerShell tests resolve `powershell.exe` on Windows or `pwsh` on Linux and reuse that path in native-process helper coverage.
+- The concurrency JUnit assertion aggregates `tests`, `skipped`, `failures`, and `errors` across nested suites; it requires at least one test and zero non-passing counters.
+- `pytest` now requires a fixed 9.x release.
+- `python-jose` was replaced with PyJWT because its mandatory `ecdsa` dependency had no patched version. Token claims, configured algorithm/secret use, invalid-token behavior, and public schemas remain unchanged.
+- Synthetic test HMAC keys were lengthened to meet the 32-byte HS256 recommendation.
+
+### Review Notes
+
+- No endpoint, model, migration, frontend, Docker, Compose, or business-rule behavior changed.
+- Authentication failure remains reusable and HTTP-independent: invalid or expired tokens return `None`.
+- No vulnerability was ignored and no quality gate was weakened.
+- Hosted credentials remain synthetic; no secrets were added.
+
+### Tests And Local Verification
+
+- Focused PowerShell/CI tests: 22 passed.
+- Focused auth/security/PowerShell/CI tests after PyJWT: 49 passed.
+- Full backend suite: passed with 21 PostgreSQL-marked tests skipped as intended and one existing Starlette/httpx deprecation warning.
+- Backend compile: passed.
+- Alembic heads/history: passed; one head at `0010`.
+- `pip-audit -r requirements-dev.txt`: no known vulnerabilities found.
+- Pinned actionlint 1.7.7: passed.
+- `docker compose config --quiet`: passed.
+- Original hosted PostgreSQL execution: 21 passed before the old report parser failed.
+
+### Hosted Rerun
+
+- Pull request: `#1` (`fix/hosted-backend-ci` -> `main`).
+- Fix commit: `fa8a2466f17b03cfad3dbd004a809e949172ddca`.
+- CI run `29187865561`: success.
+- Backend quality job `86637131256`: success.
+- PostgreSQL concurrency job `86637131274`: success.
+- Frontend quality job `86637131251`: success.
+- Compose and image validation job `86637131241`: success.
+- E2E Smoke run `29187865548`: success.
+
+### Completion Classification
+
+Status: READY.
+
+### Known Limitations
+
+No unresolved CI limitation remains. Broader production deployment limitations are unchanged and outside this CI-fix scope.
+
+### Next Suggested Task
+
+Review and merge pull request `#1`. No additional CI fix is required.

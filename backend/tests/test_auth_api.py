@@ -2,7 +2,7 @@ from collections.abc import Generator
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from jose import jwt
+import jwt
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session

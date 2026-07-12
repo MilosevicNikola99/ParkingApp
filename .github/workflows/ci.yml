@@ -95,7 +95,7 @@ jobs:
       - name: Run PostgreSQL concurrency tests
         run: |
           python -m pytest -m postgres_concurrency tests/postgres_concurrency --junitxml=postgres-concurrency.xml
-          python -c "import xml.etree.ElementTree as ET; root=ET.parse('postgres-concurrency.xml').getroot(); tests=int(root.attrib.get('tests', 0)); skipped=int(root.attrib.get('skipped', 0)); assert tests > 0 and skipped == 0, (tests, skipped)"
+          python -c "import xml.etree.ElementTree as ET; root=ET.parse('postgres-concurrency.xml').getroot(); suites=[root] if root.tag == 'testsuite' else root.findall('testsuite'); counts={name: sum(int(suite.attrib.get(name, 0)) for suite in suites) for name in ('tests', 'skipped', 'failures', 'errors')}; assert counts['tests'] > 0 and counts['skipped'] == counts['failures'] == counts['errors'] == 0, counts"
       - name: Upload concurrency diagnostics
         if: failure()
         continue-on-error: true

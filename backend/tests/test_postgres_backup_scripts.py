@@ -1,5 +1,6 @@
 import hashlib
 import json
+import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -7,11 +8,15 @@ from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 SCRIPTS_DIR = ROOT_DIR / "scripts"
+POWERSHELL_EXECUTABLE = shutil.which("powershell.exe") or shutil.which("pwsh")
 
 
 def run_powershell(*args: str) -> subprocess.CompletedProcess[str]:
+    if POWERSHELL_EXECUTABLE is None:
+        raise RuntimeError("PowerShell executable not found")
+
     return subprocess.run(
-        ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", *args],
+        [POWERSHELL_EXECUTABLE, "-NoProfile", "-ExecutionPolicy", "Bypass", *args],
         cwd=ROOT_DIR,
         text=True,
         capture_output=True,
@@ -66,18 +71,22 @@ def test_backup_filename_generation_is_timestamped_and_includes_database_name() 
     assert result.stdout.strip() == "parking-app_20260620T123456Z.pgdump"
 
 
-def test_native_process_helpers_work_on_windows_powershell(tmp_path: Path) -> None:
+def test_native_process_helpers_work_with_available_powershell(tmp_path: Path) -> None:
+    assert POWERSHELL_EXECUTABLE is not None
+
     common_script = SCRIPTS_DIR / "postgres_backup_common.ps1"
     output_file = tmp_path / "native-output.txt"
     input_file = tmp_path / "native-input.txt"
     input_file.write_text("input text", encoding="utf-8")
+    powershell_path = POWERSHELL_EXECUTABLE.replace("'", "''")
+    powershell_name = Path(POWERSHELL_EXECUTABLE).name.replace("'", "''")
     command = (
         f". '{common_script}'; "
-        "$ps = (Get-Command powershell.exe).Source; "
+        f"$ps = '{powershell_path}'; "
         "$cmd = [pscustomobject]@{ "
         "Executable = $ps; "
         "Prefix = @('-NoProfile', '-Command'); "
-        "DisplayName = 'powershell.exe' "
+        f"DisplayName = '{powershell_name}' "
         "}; "
         f"Invoke-NativeToFile -ComposeCommand $cmd -CommandArguments @('[Console]::Out.Write(\"ok\")') -OutputFile '{output_file}'; "
         f"$inputResult = Invoke-NativeWithInputFileText -ComposeCommand $cmd -CommandArguments @('[Console]::Out.Write([Console]::In.ReadToEnd())') -InputFile '{input_file}'; "

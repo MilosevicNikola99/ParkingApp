@@ -147,7 +147,9 @@ PostgreSQL concurrency requires a disposable PostgreSQL database and `POSTGRES_C
 - If E2E startup fails, inspect the uploaded sanitized `docker-status.txt` and `service-logs.txt` plus the Playwright HTML report.
 - If cleanup validation fails, remove only the disposable `parkingappe2eci` project; do not delete normal development volumes.
 - If a dependency audit fails, update or explicitly assess the dependency. Do not suppress or force-fix the finding in CI.
+- Hosted Ubuntu uses `pwsh`; cross-platform PowerShell tests must resolve `powershell.exe` or `pwsh` instead of assuming the Windows executable name.
+- Pytest JUnit output may use a `<testsuites>` root. Aggregate child `<testsuite>` counters and require nonzero tests plus zero skips, failures, and errors.
 
-## Hosted Verification Limitation
+## Hosted Verification
 
-Workflow YAML and individual commands can be validated locally, but a definitive GitHub-hosted result requires committing `.github/workflows/ci.yml` and `.github/workflows/e2e.yml` to the actual repository and running GitHub Actions. This task does not initialize Git metadata, push branches, or publish anything.
+Pull request `#1` verified the complete hosted workflow set on GitHub Actions. CI run `29187865561` passed backend quality, PostgreSQL concurrency, frontend quality, and Compose/image validation; E2E run `29187865548` passed the Chromium MVP smoke suite.
