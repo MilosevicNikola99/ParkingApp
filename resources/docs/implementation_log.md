@@ -9282,16 +9282,23 @@ Fix hosted GitHub Actions failures for backend quality and PostgreSQL concurrenc
 
 ### Hosted Rerun
 
-Pending publication of the focused fix branch and GitHub Actions PR rerun.
+- Pull request: `#1` (`fix/hosted-backend-ci` -> `main`).
+- Fix commit: `fa8a2466f17b03cfad3dbd004a809e949172ddca`.
+- CI run `29187865561`: success.
+- Backend quality job `86637131256`: success.
+- PostgreSQL concurrency job `86637131274`: success.
+- Frontend quality job `86637131251`: success.
+- Compose and image validation job `86637131241`: success.
+- E2E Smoke run `29187865548`: success.
 
 ### Completion Classification
 
-Status: PENDING_HOSTED_RERUN.
+Status: READY.
 
 ### Known Limitations
 
-The local Windows runner cannot prove Ubuntu `pwsh` process behavior. The hosted backend-quality rerun is the authoritative cross-platform check.
+No unresolved CI limitation remains. Broader production deployment limitations are unchanged and outside this CI-fix scope.
 
 ### Next Suggested Task
 
-Push the focused fix branch, open a pull request, verify all hosted CI and E2E jobs, then update this entry with final run IDs and READY/BLOCKED classification.
+Review and merge pull request `#1`. No additional CI fix is required.

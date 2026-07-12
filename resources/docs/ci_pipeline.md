@@ -150,6 +150,6 @@ PostgreSQL concurrency requires a disposable PostgreSQL database and `POSTGRES_C
 - Hosted Ubuntu uses `pwsh`; cross-platform PowerShell tests must resolve `powershell.exe` or `pwsh` instead of assuming the Windows executable name.
 - Pytest JUnit output may use a `<testsuites>` root. Aggregate child `<testsuite>` counters and require nonzero tests plus zero skips, failures, and errors.
 
-## Hosted Verification Limitation
+## Hosted Verification
 
-Workflow YAML and individual commands can be validated locally, but a definitive GitHub-hosted result requires committing `.github/workflows/ci.yml` and `.github/workflows/e2e.yml` to the actual repository and running GitHub Actions. This task does not initialize Git metadata, push branches, or publish anything.
+Pull request `#1` verified the complete hosted workflow set on GitHub Actions. CI run `29187865561` passed backend quality, PostgreSQL concurrency, frontend quality, and Compose/image validation; E2E run `29187865548` passed the Chromium MVP smoke suite.
