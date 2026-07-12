@@ -6,6 +6,8 @@ The application has an MVP backend, Vue frontend, local Docker Compose setup, Po
 
 Release `v1.0.0-mvp` is the completed MVP baseline. Hosted backend, PostgreSQL concurrency, frontend, Compose/image, dependency-audit, and Chromium E2E checks pass. Production deployment is not included; the next work should focus on environment-specific secrets and TLS, scheduler orchestration, backup operations, monitoring/alerting, and deployment validation.
 
+The production operator handoff is the [production deployment plan](production_deployment_plan.md). The built-in production baseline uses containerized PostgreSQL and the nginx TLS proxy. External PostgreSQL and production Prometheus/Grafana require reviewed deployment overrides; CI currently validates but does not deploy.
+
 This document summarizes the architecture, implemented workflows, operational commands, and remaining limitations for the next developer.
 
 ## Architecture Overview

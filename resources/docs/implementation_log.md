@@ -9368,3 +9368,66 @@ Prepare the ParkingApp MVP release finalization.
 ### Next Suggested Task
 
 Review and merge the release/v1.0.0-mvp branch. From the resulting clean and current main, create and push the annotated v1.0.0-mvp tag, then publish the prepared GitHub Release text without deploying or publishing images.
+
+## Production Deployment Plan And Operational Runbook
+
+### Task Name
+
+Prepare a practical production deployment plan for ParkingApp v1.0.0-mvp.
+
+### Files Changed
+
+- resources/docs/production_deployment_plan.md
+- README.md
+- resources/docs/developer_handoff.md
+- resources/docs/implementation_log.md
+
+### Existing Asset Review
+
+Reviewed production/local Compose, all environment examples, nginx TLS proxy, Prometheus rules/configuration, Grafana provisioning, backup/restore/verification scripts, local TLS helper, release notes, CI documentation, secrets/TLS runbook, observability runbook, developer handoff, implementation log, and README.
+
+### Deployment Decisions And Boundaries
+
+- Target is a maintained Linux VM or on-premises server with Docker Engine and Compose v2.
+- Current production Compose directly supports its bundled PostgreSQL db service and persistent postgres_data volume.
+- External PostgreSQL requires a reviewed override because production Compose fixes DATABASE_HOST=db and depends on db.
+- The nginx proxy is the current HTTPS/SPA/API production entry point.
+- Prometheus/Grafana assets are groundwork; those services are not declared in docker-compose.production.yml and require a production override or external platform.
+- PowerShell 7 is required on Linux for the supplied database operational scripts.
+- GitHub Actions validates releases but does not deploy or publish images.
+- No application, schema, auth, business logic, CI, Compose, or deployment configuration was changed.
+
+### Plan Coverage
+
+The plan documents architecture, prerequisites, ports/firewall/DNS, environment and secret files, TLS, containerized and external database strategies, Alembic 0010 migration, build/start/stop/log commands, scheduler operation, backup/restore, monitoring, logging, health, CI/CD, rollback, security controls, incident runbook, post-deployment checks, and future automation.
+
+### Validation
+
+- Referenced paths and production Compose service/profile names checked against repository assets.
+- Production Compose default and scheduler profile validation performed after documentation creation.
+- Markdown structure, command/service references, generated-artifact status, and secret patterns checked.
+- No backend/frontend/E2E suite rerun required because only documentation changed.
+- docker compose -f docker-compose.production.yml config --quiet: passed.
+- docker compose -f docker-compose.production.yml --profile scheduler config --quiet: passed.
+- Resolved default services: db, backend, proxy.
+- Resolved scheduler-profile services: db, assignment-scheduler, backend, proxy.
+- Referenced-path, Markdown structure, service/profile, artifact, and secret scans: passed.
+
+### Config Findings
+
+No existing configuration was changed. Two operational limitations are documented explicitly:
+
+1. External PostgreSQL is not selectable through environment values alone in the current production Compose file.
+2. Production Compose does not currently declare Prometheus/Grafana services.
+
+### Completion Classification
+
+Status: READY.
+
+### Known Limitations
+
+This task does not deploy, publish images, create infrastructure, provide secrets, or prove behavior on the final target host.
+
+### Next Suggested Task
+
+Review the plan with the target infrastructure owner, choose containerized versus managed PostgreSQL and built-in versus external TLS/monitoring, then create environment-specific deployment overrides and an approved staging rehearsal without adding production secrets to Git.

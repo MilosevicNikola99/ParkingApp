@@ -24,6 +24,8 @@ FastAPI and Vue application for managing employee parking availability, applicat
 - `scripts`: local smoke and verification scripts.
 - `resources/docs`: planning, implementation log, deployment/security notes, handoff, and QA docs.
 
+Production operators should start with the [production deployment plan](resources/docs/production_deployment_plan.md) for architecture, prerequisites, deployment, rollback, backup, monitoring, and validation steps.
+
 ## Local Docker Setup
 
 Copy the example environment file before starting local services:
