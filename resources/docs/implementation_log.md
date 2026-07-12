@@ -9431,3 +9431,56 @@ This task does not deploy, publish images, create infrastructure, provide secret
 ### Next Suggested Task
 
 Review the plan with the target infrastructure owner, choose containerized versus managed PostgreSQL and built-in versus external TLS/monitoring, then create environment-specific deployment overrides and an approved staging rehearsal without adding production secrets to Git.
+
+## Staging Deployment Rehearsal Checklist And Operator Runbook
+
+### Task Name
+
+Prepare a staging deployment rehearsal checklist for ParkingApp v1.0.0-mvp.
+
+### Files Changed
+
+- resources/docs/staging_deployment_rehearsal.md
+- README.md
+- resources/docs/developer_handoff.md
+- resources/docs/implementation_log.md
+
+### Scope And Decisions
+
+- Documentation only; no deployment, image publication, product behavior, schema, auth, business logic, or Compose configuration change.
+- Uses docker-compose.production.yml with containerized PostgreSQL for the baseline rehearsal.
+- No example environment or Compose override was added because the existing production path is sufficient.
+- All users, data, database credentials, JWT secrets, certificates, and backup targets are synthetic/staging-only.
+- External PostgreSQL and production Prometheus/Grafana remain separate reviewed-override decisions.
+- Admin bootstrap preserves the seed guard: a one-off seed container uses ENVIRONMENT=test with synthetic values from a protected operator file; long-running services remain production mode.
+
+### Checklist Coverage
+
+The runbook includes preconditions, required inputs, roles/evidence, clean host baseline, release checkout, environment and secret preparation, TLS, Compose validation/build, PostgreSQL startup, Alembic 0010, backend/proxy health, safe admin bootstrap, manual admin/owner/employee smoke, scheduler operation, logs/request IDs, internal metrics, backup/verification, disposable restore, rollback simulation, clean stop, acceptance criteria, failure log, and sign-off.
+
+### Validation
+
+- Markdown structure and referenced paths checked.
+- Production default and scheduler Compose configurations checked.
+- Service/profile names and command references checked against repository files.
+- Secret-pattern and generated-artifact scans checked.
+- No full backend/frontend/E2E rerun required because this task changes documentation only.
+- docker compose -f docker-compose.production.yml config --quiet: passed.
+- docker compose -f docker-compose.production.yml --profile scheduler config --quiet: passed.
+- Default services resolved as db, backend, proxy.
+- Scheduler profile resolved as db, backend, proxy, assignment-scheduler.
+- Markdown/path, command/service, secret-pattern, and generated-artifact checks: passed.
+
+### Completion Classification
+
+Status: READY.
+
+### Known Limitations
+
+- This checklist is not evidence that a rehearsal has run.
+- Staging hostname, TLS material, infrastructure, synthetic credentials, monitoring option, and operator approvals must be provided out-of-band.
+- The unrelated staged .idea/vcs.xml change was present before this task and was not modified or included in task scope.
+
+### Next Suggested Task
+
+Obtain staging approval and operator inputs, execute the checklist on a clean staging server, record failures and evidence, and treat any failed acceptance item as the next deployment defect before considering production.

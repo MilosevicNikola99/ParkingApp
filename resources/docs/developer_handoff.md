@@ -8,6 +8,8 @@ Release `v1.0.0-mvp` is the completed MVP baseline. Hosted backend, PostgreSQL c
 
 The production operator handoff is the [production deployment plan](production_deployment_plan.md). The built-in production baseline uses containerized PostgreSQL and the nginx TLS proxy. External PostgreSQL and production Prometheus/Grafana require reviewed deployment overrides; CI currently validates but does not deploy.
 
+Use the [staging deployment rehearsal](staging_deployment_rehearsal.md) as the required pre-production operator checklist. It uses the production Compose path with synthetic secrets/data and records migration, TLS, smoke, scheduler, backup/restore, monitoring, rollback, and cleanup evidence.
+
 This document summarizes the architecture, implemented workflows, operational commands, and remaining limitations for the next developer.
 
 ## Architecture Overview

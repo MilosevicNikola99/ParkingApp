@@ -26,6 +26,8 @@ FastAPI and Vue application for managing employee parking availability, applicat
 
 Production operators should start with the [production deployment plan](resources/docs/production_deployment_plan.md) for architecture, prerequisites, deployment, rollback, backup, monitoring, and validation steps.
 
+Before production, execute the [staging deployment rehearsal](resources/docs/staging_deployment_rehearsal.md) with synthetic secrets and data, and record the acceptance result.
+
 ## Local Docker Setup
 
 Copy the example environment file before starting local services:
