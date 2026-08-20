@@ -11,34 +11,11 @@
 
     <AlertMessage v-if="errorMessage" :message="errorMessage" />
 
-    <section class="dashboard-grid dashboard-grid--focused" aria-label="Dashboard modules">
+    <section class="dashboard-grid dashboard-grid--focused" :aria-label="`${roleLabel} dashboard tasks`">
       <DashboardCard
-        label="Find open parking windows and apply for the time you need."
-        metric="Browse"
-        status="Employee"
-        title="Browse available spots"
-        to="/availabilities"
-      />
-      <DashboardCard
-        label="Track pending, selected, cancelled, and rejected requests."
-        metric="Review"
-        status="Requests"
-        title="Review applications"
-        to="/my-applications"
-      />
-      <DashboardCard
-        label="See assigned parking and cancel when you no longer need it."
-        metric="Review"
-        status="Reservations"
-        title="Review reservations"
-        to="/my-reservations"
-      />
-      <DashboardCard
-        label="Publish the times when your spot is available to others."
-        metric="Manage"
-        status="Owner"
-        title="Manage my availabilities"
-        to="/my-availabilities"
+        v-for="card in dashboardCards"
+        :key="`${card.to}-${card.title}`"
+        v-bind="card"
       />
     </section>
   </AppLayout>
@@ -62,4 +39,40 @@ const greeting = computed(() => {
 });
 
 const roleLabel = computed(() => currentUser.value?.role?.replace("_", " ") || "Authenticated");
+
+const dashboardCards = computed(() => {
+  if (currentUser.value?.role === "parking_owner") {
+    return [
+      {
+        label: "Choose one of your assigned spots and tell employees when it is free.",
+        metric: "Publish",
+        status: "Parking offers",
+        title: "Offer your parking spot",
+        to: "/my-availabilities",
+      },
+      {
+        label: "Review upcoming, assigned, cancelled, and past parking offers.",
+        metric: "Review",
+        status: "Your spots",
+        title: "Review published offers",
+        to: "/my-availabilities",
+      },
+    ];
+  }
+
+  if (currentUser.value?.role === "admin") {
+    return [
+      { label: "Manage teams, users, and assigned parking spots.", metric: "Setup", status: "Administration", title: "People and parking", to: "/admin" },
+      { label: "Review employee requests, reservations, and corrections.", metric: "Operate", status: "Daily work", title: "Parking operations", to: "/admin/parking-applications" },
+      { label: "Trace assignment decisions and administrator actions.", metric: "Audit", status: "Governance", title: "Audit activity", to: "/admin/audit-logs" },
+      { label: "Review operational summaries and export supporting data.", metric: "Report", status: "Insights", title: "Reports", to: "/admin/reports" },
+    ];
+  }
+
+  return [
+    { label: "Find open parking windows and request the time you need.", metric: "Browse", status: "Parking", title: "Browse available spots", to: "/availabilities" },
+    { label: "Track requests that are waiting, selected, cancelled, or not selected.", metric: "Review", status: "Requests", title: "Review my requests", to: "/my-applications" },
+    { label: "See assigned parking and cancel when you no longer need it.", metric: "Review", status: "Reservations", title: "Review reservations", to: "/my-reservations" },
+  ];
+});
 </script>

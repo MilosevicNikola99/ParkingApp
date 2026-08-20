@@ -1,19 +1,20 @@
 <template>
   <section class="admin-action-panel" :aria-labelledby="`${mode}-override-title`">
     <div class="workspace-section__header">
-      <p class="admin-action-panel__eyebrow">{{ isReplacementMode ? "Correct active reservation" : "Assign open availability" }}</p>
+      <p class="admin-action-panel__eyebrow">{{ isReplacementMode ? "Correct active reservation" : "Assign open parking offer" }}</p>
       <h2 :id="`${mode}-override-title`">{{ title }}</h2>
       <p>{{ description }}</p>
     </div>
 
     <div class="field-guide" aria-label="Override field guide">
-      <p><strong>Availability ID</strong> identifies the availability window you are changing.</p>
-      <p v-if="isReplacementMode"><strong>Application ID</strong> uses an existing request. <strong>Applicant ID</strong> is for a user who should replace the current reservation when no pending request exists.</p>
-      <p v-else><strong>Application ID</strong> identifies the pending request to assign.</p>
+      <p><strong>Find references first:</strong> open Requests for the request and offer references, then Reservations for the current assignment.</p>
+      <p v-if="isReplacementMode"><strong>Request ID</strong> uses an existing request. <strong>Employee ID</strong> is for an employee who should replace the current holder when no waiting request exists.</p>
+      <p v-else><strong>Request ID</strong> identifies the waiting request to assign.</p>
       <p><strong>Reason</strong> is required and appears in audit history.</p>
     </div>
 
-    <form class="admin-form" @submit.prevent="submitForm">
+    <form class="admin-form technical-id-form" @submit.prevent="submitForm">
+      <p class="technical-id-form__heading">Technical identifiers</p>
       <BaseInput
         v-model="form.availabilityId"
         label="Availability ID"
@@ -25,7 +26,7 @@
       />
       <BaseInput
         v-model="form.applicationId"
-        label="Application ID"
+        label="Request ID"
         min="1"
         :name="`${mode}-application-id`"
         :required="!isReplacementMode"
@@ -35,14 +36,14 @@
       <BaseInput
         v-if="isReplacementMode"
         v-model="form.applicantId"
-        label="Applicant ID"
+        label="Employee ID"
         min="1"
         :name="`${mode}-applicant-id`"
         step="1"
         type="number"
       />
       <p v-if="isReplacementMode" class="form-helper">
-        Use Applicant ID when no pending application exists after assignment. Enter either Application ID or Applicant ID, not both.
+        Use Employee ID when no waiting request exists after assignment. Enter either Request ID or Employee ID, not both.
       </p>
       <BaseTextarea
         v-model="form.reason"
@@ -121,13 +122,13 @@ function submitForm() {
   const hasApplicantId = form.applicantId.trim() !== "";
   if (isReplacementMode.value) {
     if (hasApplicationId === hasApplicantId) {
-      validationError.value = "Enter either an application ID or an applicant ID.";
+      validationError.value = "Enter either a request ID or an employee ID.";
       return;
     }
     if (hasApplicationId) {
       const applicationId = parsePositiveId(form.applicationId);
       if (applicationId === null) {
-        validationError.value = "Enter a valid application ID.";
+        validationError.value = "Enter a valid request ID.";
         return;
       }
 
@@ -138,7 +139,7 @@ function submitForm() {
 
     const applicantId = parsePositiveId(form.applicantId);
     if (applicantId === null) {
-      validationError.value = "Enter a valid applicant ID.";
+      validationError.value = "Enter a valid employee ID.";
       return;
     }
 
@@ -149,7 +150,7 @@ function submitForm() {
 
   const applicationId = parsePositiveId(form.applicationId);
   if (applicationId === null) {
-    validationError.value = "Enter a valid application ID.";
+    validationError.value = "Enter a valid request ID.";
     return;
   }
 

@@ -155,7 +155,7 @@ test.describe.serial("user guide screenshots", () => {
     await capture(page, "owner-publish-availability.png");
 
     const responsePromise = page.waitForResponse(responseFor("/parking-availabilities", "POST"));
-    await page.getByRole("button", { name: "Publish" }).click();
+    await page.getByRole("button", { name: "Publish offer" }).click();
     const response = await responsePromise;
     expect(response.status()).toBe(201);
     state.availability = await response.json();
@@ -175,7 +175,7 @@ test.describe.serial("user guide screenshots", () => {
 
     state.applicationA = await applyForAvailability(page);
     await page.goto("/my-applications");
-    await expect(page.getByRole("row").filter({ hasText: `#${state.applicationA.id}` })).toContainText("pending");
+    await expect(page.getByRole("row").filter({ hasText: `Request #${state.applicationA.id}` })).toContainText("Waiting for assignment");
     await capture(page, "employee-applications.png");
     await logout(page);
 
@@ -187,9 +187,9 @@ test.describe.serial("user guide screenshots", () => {
 
     await login(page, credentials.employeeA);
     await page.goto("/my-reservations");
-    const reservationRow = page.getByRole("row").filter({ hasText: `#${state.spot.id}` });
-    await expect(reservationRow).toContainText("active");
-    state.reservationId = Number((await reservationRow.getByRole("cell").first().innerText()).replace("#", ""));
+    const reservationRow = page.getByRole("row").filter({ hasText: names.spot });
+    await expect(reservationRow).toContainText("Active");
+    state.reservationId = Number((await reservationRow.innerText()).match(/Reservation #(\d+)/)[1]);
     await capture(page, "employee-reservations.png");
     await logout(page);
   });
@@ -208,7 +208,7 @@ test.describe.serial("user guide screenshots", () => {
     await page.goto("/admin/overrides");
     const replacement = page.getByRole("region", { name: "Replacement assignment" });
     await replacement.getByLabel("Availability ID").fill(String(state.availability.id));
-    await replacement.getByLabel("Applicant ID").fill(String(state.employeeB.id));
+    await replacement.getByLabel("Employee ID").fill(String(state.employeeB.id));
     await replacement.getByLabel("Reason").fill(`Guide replacement ${runId}`);
     const replacementResponse = page.waitForResponse(
       responseFor(`/admin/parking-availabilities/${state.availability.id}/replace-reservation`, "POST"),
@@ -221,7 +221,7 @@ test.describe.serial("user guide screenshots", () => {
     await page.goto("/admin/audit-logs");
     await page.getByLabel("Availability ID").fill(String(state.availability.id));
     await page.getByRole("button", { name: "Apply filters" }).click();
-    await expect(page.getByRole("region", { name: "Assignment audit logs" })).toContainText("admin_override");
+    await expect(page.getByRole("region", { name: "Assignment audit logs" })).toContainText("Admin override");
     await capture(page, "admin-audit-logs.png");
 
     await page.goto("/admin/reports");

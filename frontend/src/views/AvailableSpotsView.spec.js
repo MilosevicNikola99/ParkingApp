@@ -36,6 +36,8 @@ describe("AvailableSpotsView", () => {
         priority_until: null,
         status: "open",
         note: null,
+        parking_spot: { id: 22, code: "A-22", location: "North garage" },
+        owner: { id: 2, first_name: "Olivia", last_name: "Owner", email: "owner@example.com" },
       },
     ]);
     let resolveApplication;
@@ -57,8 +59,8 @@ describe("AvailableSpotsView", () => {
 
     resolveApplication({ id: 20 });
     await flushPromises();
-    expect(wrapper.text()).toContain("Applied");
-    expect(wrapper.text()).toContain("Application submitted for parking spot #22.");
+    expect(wrapper.text()).toContain("Requested");
+    expect(wrapper.text()).toContain("Parking request submitted for A-22 - North garage.");
   });
 
   it("renders the empty state with guidance", async () => {

@@ -58,10 +58,14 @@ describe("AdminReportsView", () => {
     expect(wrapper.text()).toContain("Total reservations");
     expect(wrapper.text()).toContain("Open without reservation");
     expect(wrapper.text()).toContain("Cancelled reservations");
-    expect(wrapper.text()).toContain("Application lifecycle");
+    expect(wrapper.text()).toContain("Request lifecycle");
+    expect(wrapper.text()).toContain("Open for requests");
+    expect(wrapper.text()).toContain("Waiting for assignment");
+    expect(wrapper.text()).toContain("Not selected");
+    expect(wrapper.text()).not.toMatch(/\bPending\b|\bRejected\b/);
     expect(wrapper.text()).toContain("#7");
     expect(wrapper.text()).toContain("#9");
-    expect(wrapper.text()).toContain("scheduled");
+    expect(wrapper.text()).toContain("Scheduled");
     expect(wrapper.text()).toContain("Export reservations");
     expect(wrapper.text()).toContain("Export audit logs");
   });

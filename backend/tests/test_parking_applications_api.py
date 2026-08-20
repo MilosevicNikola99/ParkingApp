@@ -1,5 +1,6 @@
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
+import json
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -190,10 +191,11 @@ def application_payload(availability_id: int) -> dict[str, int | str]:
 
 
 def assert_no_sensitive_fields(payload: dict[str, object]) -> None:
-    assert "availability" not in payload
-    assert "applicant" not in payload
-    assert "hashed_password" not in payload
-    assert "password" not in payload
+    assert payload["availability"]["parking_spot"]["code"]
+    assert payload["applicant"]["email"]
+    serialized_payload = json.dumps(payload)
+    assert "hashed_password" not in serialized_payload
+    assert "password" not in serialized_payload
 
 
 def test_authenticated_user_can_apply_for_open_future_availability(

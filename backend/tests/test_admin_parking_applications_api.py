@@ -116,9 +116,12 @@ def assert_safe_application_response(payload: dict[str, object]) -> None:
         "note",
         "created_at",
         "updated_at",
+        "availability",
+        "applicant",
     }
     serialized_payload = json.dumps(payload)
-    assert "applicant" not in payload
+    assert payload["availability"]["parking_spot"]["code"]
+    assert payload["applicant"]["email"]
     assert "hashed_password" not in serialized_payload
     assert "password" not in serialized_payload
     assert "token" not in serialized_payload

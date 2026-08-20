@@ -1,5 +1,6 @@
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
+import json
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -221,10 +222,11 @@ def bearer_header(user: User) -> dict[str, str]:
 def assert_no_sensitive_fields(payload: dict[str, object]) -> None:
     assert "availability" not in payload
     assert "application" not in payload
-    assert "parking_spot" not in payload
-    assert "reserved_for_user" not in payload
-    assert "hashed_password" not in payload
-    assert "password" not in payload
+    assert payload["parking_spot"]["code"]
+    assert payload["reserved_for_user"]["email"]
+    serialized_payload = json.dumps(payload)
+    assert "hashed_password" not in serialized_payload
+    assert "password" not in serialized_payload
 
 
 def test_authenticated_user_can_list_own_reservations(client: TestClient, db_session: Session) -> None:

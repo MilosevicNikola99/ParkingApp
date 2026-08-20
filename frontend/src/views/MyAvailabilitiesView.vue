@@ -1,10 +1,10 @@
 <template>
-  <AppLayout :user="currentUser" title="My availabilities" @logout="handleLogout">
+  <AppLayout :user="currentUser" title="Offer my spot" @logout="handleLogout">
     <div class="page-toolbar">
       <div>
         <p class="page-toolbar__eyebrow">Parking owner</p>
-        <h2>Published availability</h2>
-        <p class="page-toolbar__description">Publish the times when your parking spot is available for other employees.</p>
+        <h2>Offer your parking spot</h2>
+        <p class="page-toolbar__description">Tell colleagues when one of your assigned parking spots is free.</p>
       </div>
       <BaseButton :loading="isPageLoading" size="compact" variant="secondary" @click="loadPage">Refresh</BaseButton>
     </div>
@@ -13,14 +13,14 @@
     <AlertMessage :message="spotErrorMessage" />
     <AlertMessage :message="successMessage" variant="success" />
 
-    <section class="context-help" aria-label="My availabilities help">
-      <strong>Your assigned parking spots are shown automatically.</strong> You can publish availability only for active parking spots assigned to you.
+    <section class="context-help" aria-label="Parking offer help">
+      <strong>Your assigned parking spots are shown automatically.</strong> Choose when your spot is free; no parking spot ID is needed.
     </section>
 
     <section class="workspace-section workspace-section--form" aria-labelledby="publish-availability-title">
       <div class="workspace-section__header">
-        <h2 id="publish-availability-title">Publish availability</h2>
-        <p>Select an assigned parking spot when needed, then choose a clear start and end time.</p>
+        <h2 id="publish-availability-title">Create a parking offer</h2>
+        <p>Select an assigned parking spot when needed, then choose when colleagues may use it.</p>
       </div>
 
       <p v-if="!isSpotLoading && !spotErrorMessage && ownedSpots.length === 0" class="context-help context-help--warning" role="status">
@@ -52,26 +52,26 @@
           <BaseTextarea v-model="form.note" label="Note" name="availability-note" placeholder="Optional" />
           <AlertMessage :message="formError" />
           <div class="form-actions">
-            <BaseButton :disabled="publishDisabled" :loading="isPublishing" type="submit">Publish</BaseButton>
+            <BaseButton :disabled="publishDisabled" :loading="isPublishing" type="submit">Publish offer</BaseButton>
           </div>
         </fieldset>
       </form>
     </section>
 
-    <LoadingState v-if="isAvailabilityLoading" message="Loading published availability" />
-    <EmptyState v-else-if="availabilities.length === 0" message="Published parking availability will appear here." title="No published availability" />
-    <section v-else class="workspace-section" aria-label="My published parking availability">
+    <LoadingState v-if="isAvailabilityLoading" message="Loading published parking offers" />
+    <EmptyState v-else-if="availabilities.length === 0" message="Parking offers you publish will appear here." title="No published offers" />
+    <section v-else class="workspace-section" aria-label="My published parking offers">
       <div class="data-table-wrap">
         <table class="data-table">
           <thead>
             <tr>
-              <th scope="col">Spot ID</th><th scope="col">Starts</th><th scope="col">Ends</th>
+              <th scope="col">Parking spot</th><th scope="col">Starts</th><th scope="col">Ends</th>
               <th scope="col">Team priority until</th><th scope="col">Status</th><th scope="col">Note</th><th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="availability in availabilities" :key="availability.id">
-              <td class="data-table__id" data-label="Spot ID">#{{ availability.parking_spot_id }}</td>
+              <td data-label="Parking spot"><strong class="data-table__primary">{{ availabilitySpotLabel(availability) }}</strong><small class="data-table__reference">Offer #{{ availability.id }}</small></td>
               <td data-label="Starts"><DateTimeDisplay :value="availability.start_at" /></td>
               <td data-label="Ends"><DateTimeDisplay :value="availability.end_at" /></td>
               <td data-label="Team priority until"><DateTimeDisplay :value="availability.priority_until || ''" /></td>
@@ -105,6 +105,7 @@ import AppLayout from "@/layouts/AppLayout.vue";
 import { getApiErrorMessage } from "@/services/apiErrors";
 import { cancelAvailability, createAvailability, listMyAvailabilities } from "@/services/availabilityService";
 import { listMyActiveParkingSpots } from "@/services/parkingSpotService";
+import { getParkingSpotLabel } from "@/utils/display";
 
 const { currentUser, handleLogout } = useAuthenticatedPage();
 const availabilities = ref([]);
@@ -128,8 +129,12 @@ const parkingSpotOptions = computed(() =>
 );
 
 function parkingSpotLabel(spot) {
-  const detail = spot.location || spot.description;
-  return detail ? spot.code + " - " + detail : spot.code;
+  return getParkingSpotLabel(spot);
+}
+
+function availabilitySpotLabel(availability) {
+  const spot = availability.parking_spot || ownedSpots.value.find((item) => item.id === availability.parking_spot_id);
+  return getParkingSpotLabel(spot, availability.parking_spot_id);
 }
 
 function selectedParkingSpotId() {
@@ -161,7 +166,7 @@ async function loadAvailabilities() {
   try {
     availabilities.value = await listMyAvailabilities();
   } catch (error) {
-    errorMessage.value = getApiErrorMessage(error, "Published availability could not be loaded.");
+    errorMessage.value = getApiErrorMessage(error, "Published parking offers could not be loaded.");
   } finally {
     isAvailabilityLoading.value = false;
   }
@@ -210,9 +215,9 @@ async function publishAvailability() {
     availabilities.value = [availability, ...availabilities.value];
     resetForm();
     const spot = ownedSpots.value.find((item) => item.id === parkingSpotId);
-    successMessage.value = "Availability published for " + (spot ? parkingSpotLabel(spot) : "your parking spot") + ".";
+    successMessage.value = "Parking offer published for " + (spot ? parkingSpotLabel(spot) : "your parking spot") + ".";
   } catch (error) {
-    errorMessage.value = getApiErrorMessage(error, "The parking availability could not be published.");
+    errorMessage.value = getApiErrorMessage(error, "The parking offer could not be published.");
   } finally {
     isPublishing.value = false;
   }
@@ -228,9 +233,9 @@ async function cancel(availability) {
     availabilities.value = availabilities.value.map((item) =>
       item.id === updatedAvailability.id ? updatedAvailability : item,
     );
-    successMessage.value = "Availability for parking spot #" + availability.parking_spot_id + " cancelled.";
+    successMessage.value = "Parking offer for " + availabilitySpotLabel(availability) + " cancelled.";
   } catch (error) {
-    errorMessage.value = getApiErrorMessage(error, "The parking availability could not be cancelled.");
+    errorMessage.value = getApiErrorMessage(error, "The parking offer could not be cancelled.");
   } finally {
     cancellingIds.value = cancellingIds.value.filter((id) => id !== availability.id);
   }

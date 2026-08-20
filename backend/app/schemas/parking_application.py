@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.models.parking_application import ParkingApplicationStatus
+from app.schemas.display import AvailabilityDisplay, UserDisplay
 
 
 class ParkingApplicationBase(BaseModel):
@@ -39,5 +40,7 @@ class ParkingApplicationRead(BaseModel):
     note: str | None
     created_at: datetime
     updated_at: datetime
+    availability: AvailabilityDisplay | None = None
+    applicant: UserDisplay | None = None
 
     model_config = ConfigDict(from_attributes=True, extra="forbid")

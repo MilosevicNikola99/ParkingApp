@@ -25,8 +25,7 @@
         <table class="data-table data-table--wide">
           <thead>
             <tr>
-              <th scope="col">Reservation ID</th>
-              <th scope="col">Spot ID</th>
+              <th scope="col">Parking spot</th>
               <th scope="col">Starts</th>
               <th scope="col">Ends</th>
               <th scope="col">Status</th>
@@ -36,8 +35,10 @@
           </thead>
           <tbody>
             <tr v-for="reservation in reservations" :key="reservation.id">
-              <td class="data-table__id" data-label="Reservation ID">#{{ reservation.id }}</td>
-              <td data-label="Spot ID">#{{ reservation.parking_spot_id }}</td>
+              <td data-label="Parking spot">
+                <strong class="data-table__primary">{{ getParkingSpotLabel(reservation.parking_spot, reservation.parking_spot_id) }}</strong>
+                <small class="data-table__reference">Reservation #{{ reservation.id }}</small>
+              </td>
               <td data-label="Starts"><DateTimeDisplay :value="reservation.start_at" /></td>
               <td data-label="Ends"><DateTimeDisplay :value="reservation.end_at" /></td>
               <td data-label="Status"><StatusBadge :status="reservation.status" /></td>
@@ -83,6 +84,7 @@ import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { getApiErrorMessage } from "@/services/apiErrors";
 import { cancelReservation, listMyReservations } from "@/services/reservationService";
+import { getParkingSpotLabel } from "@/utils/display";
 
 const { currentUser, handleLogout } = useAuthenticatedPage();
 const reservations = ref([]);
@@ -121,7 +123,7 @@ async function cancel(reservation) {
       item.id === updatedReservation.id ? updatedReservation : item,
     );
     cancellationReasons[reservation.id] = "";
-    successMessage.value = `Reservation #${reservation.id} cancelled.`;
+    successMessage.value = `Reservation for ${getParkingSpotLabel(reservation.parking_spot, reservation.parking_spot_id)} cancelled.`;
   } catch (error) {
     errorMessage.value = getApiErrorMessage(error, "The parking reservation could not be cancelled.");
   } finally {

@@ -1,6 +1,6 @@
 <template>
   <AppLayout :user="currentUser" title="Operational reports" @logout="handleLogout">
-    <AdminPageHeader description="Monitor reservation, availability, application, and audit activity." title="Reports">
+    <AdminPageHeader description="Monitor reservations, parking offers, employee requests, and audit activity." title="Reports">
       <BaseButton :loading="isLoading" size="compact" variant="secondary" @click="loadReports">
         Refresh
       </BaseButton>
@@ -36,16 +36,16 @@
           title="Total reservations"
         />
         <DashboardCard
-          label="Published availability records"
+          label="Published parking offers"
           :metric="String(summary.availability_summary.total)"
-          status="Availability"
-          title="Total availabilities"
+          status="Parking offers"
+          title="Total offers"
         />
         <DashboardCard
           label="Submitted parking requests"
           :metric="String(summary.application_summary.total)"
-          status="Applications"
-          title="Total applications"
+          status="Requests"
+          title="Total requests"
         />
         <DashboardCard
           label="Open records without reservations"
@@ -65,20 +65,20 @@
           </dl>
         </div>
         <div class="report-lifecycle-panel">
-          <h2>Availability lifecycle</h2>
+          <h2>Parking offer lifecycle</h2>
           <dl class="report-status-list">
-            <div><dt>Open</dt><dd>{{ summary.availability_summary.open }}</dd></div>
+            <div><dt>Open for requests</dt><dd>{{ summary.availability_summary.open }}</dd></div>
             <div><dt>Assigned</dt><dd>{{ summary.availability_summary.assigned }}</dd></div>
             <div><dt>Cancelled</dt><dd>{{ summary.availability_summary.cancelled }}</dd></div>
             <div><dt>Expired</dt><dd>{{ summary.availability_summary.expired }}</dd></div>
           </dl>
         </div>
         <div class="report-lifecycle-panel">
-          <h2>Application lifecycle</h2>
+          <h2>Request lifecycle</h2>
           <dl class="report-status-list">
-            <div><dt>Pending</dt><dd>{{ summary.application_summary.pending }}</dd></div>
+            <div><dt>Waiting for assignment</dt><dd>{{ summary.application_summary.pending }}</dd></div>
             <div><dt>Selected</dt><dd>{{ summary.application_summary.selected }}</dd></div>
-            <div><dt>Rejected</dt><dd>{{ summary.application_summary.rejected }}</dd></div>
+            <div><dt>Not selected</dt><dd>{{ summary.application_summary.rejected }}</dd></div>
             <div><dt>Cancelled</dt><dd>{{ summary.application_summary.cancelled }}</dd></div>
           </dl>
         </div>
@@ -172,8 +172,8 @@ const exportingReport = ref("");
 const filters = reactive({ dateFrom: "", dateTo: "" });
 const exportReports = [
   { name: "reservations", label: "Export reservations" },
-  { name: "availabilities", label: "Export availabilities" },
-  { name: "applications", label: "Export applications" },
+  { name: "availabilities", label: "Export parking offers" },
+  { name: "applications", label: "Export requests" },
   { name: "audit-logs", label: "Export audit logs" },
 ];
 

@@ -146,8 +146,8 @@ describe("MyAvailabilitiesView", () => {
       end_at: new Date("2026-08-10T12:00").toISOString(),
       note: "Morning",
     });
-    expect(wrapper.text()).toContain("Availability published for QA-SPOT-01 - Garage level 1.");
-    expect(wrapper.get('[aria-label="My published parking availability"]').text()).toContain("Morning");
+    expect(wrapper.text()).toContain("Parking offer published for QA-SPOT-01 - Garage level 1.");
+    expect(wrapper.get('[aria-label="My published parking offers"]').text()).toContain("Morning");
   });
 
   it("submits the spot selected from multiple owned spots", async () => {

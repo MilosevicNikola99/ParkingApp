@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.parking_application import ParkingApplication, ParkingApplicationStatus
+from app.models.parking_availability import ParkingAvailability
 
 
 class ParkingApplicationRepository:
@@ -48,7 +49,7 @@ class ParkingApplicationRepository:
             select(ParkingApplication)
             .where(ParkingApplication.id == application_id)
             .options(
-                selectinload(ParkingApplication.availability),
+                selectinload(ParkingApplication.availability).selectinload(ParkingAvailability.parking_spot),
                 selectinload(ParkingApplication.applicant),
             )
             .execution_options(populate_existing=True)
@@ -93,7 +94,7 @@ class ParkingApplicationRepository:
             .where(ParkingApplication.availability_id == availability_id)
             .where(ParkingApplication.applicant_id == applicant_id)
             .options(
-                selectinload(ParkingApplication.availability),
+                selectinload(ParkingApplication.availability).selectinload(ParkingAvailability.parking_spot),
                 selectinload(ParkingApplication.applicant),
             )
         )
@@ -122,7 +123,7 @@ class ParkingApplicationRepository:
             .offset(skip)
             .limit(limit)
             .options(
-                selectinload(ParkingApplication.availability),
+                selectinload(ParkingApplication.availability).selectinload(ParkingAvailability.parking_spot),
                 selectinload(ParkingApplication.applicant),
             )
         )
@@ -142,7 +143,7 @@ class ParkingApplicationRepository:
             .offset(skip)
             .limit(limit)
             .options(
-                selectinload(ParkingApplication.availability),
+                selectinload(ParkingApplication.availability).selectinload(ParkingAvailability.parking_spot),
                 selectinload(ParkingApplication.applicant),
             )
         )
@@ -166,7 +167,7 @@ class ParkingApplicationRepository:
             .offset(skip)
             .limit(limit)
             .options(
-                selectinload(ParkingApplication.availability),
+                selectinload(ParkingApplication.availability).selectinload(ParkingAvailability.parking_spot),
                 selectinload(ParkingApplication.applicant),
             )
         )
@@ -216,7 +217,7 @@ class ParkingApplicationRepository:
             .where(ParkingApplication.status == ParkingApplicationStatus.PENDING)
             .order_by(ParkingApplication.created_at, ParkingApplication.id)
             .options(
-                selectinload(ParkingApplication.availability),
+                selectinload(ParkingApplication.availability).selectinload(ParkingAvailability.parking_spot),
                 selectinload(ParkingApplication.applicant),
             )
         )

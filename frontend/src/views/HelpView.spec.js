@@ -23,7 +23,7 @@ describe("HelpView", () => {
     expect(wrapper.text()).toContain("Parking owner");
     expect(wrapper.text()).toContain("Administrator");
     expect(wrapper.text()).toContain("Request parking");
-    expect(wrapper.text()).toContain("Publish availability");
+    expect(wrapper.text()).toContain("Offer a parking spot");
     expect(wrapper.text()).toContain("Manage operations");
   });
 });

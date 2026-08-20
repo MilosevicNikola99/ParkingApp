@@ -6,7 +6,7 @@
     />
 
     <section class="context-help context-help--warning" aria-label="Override guidance">
-      <strong>Before you submit:</strong> Manual assignment creates a reservation from a pending application on an open availability. Replacement assignment changes the active reservation for an assigned availability.
+      <strong>Before you submit:</strong> Find the request and reservation in the admin lists first. Manual assignment creates a reservation from a waiting request on an open parking offer. Replacement changes the active reservation for an assigned offer.
     </section>
 
     <AlertMessage :message="errorMessage" />
@@ -15,10 +15,10 @@
     <div class="admin-action-grid">
       <div>
         <AdminOverrideForm
-          description="Use this when an open availability has no reservation and a pending application should be assigned."
+          description="Use this when an open parking offer has no reservation and a waiting request should be assigned."
           :loading="manualLoading"
           mode="manual"
-          submit-label="Assign application"
+          submit-label="Assign request"
           title="Manual assignment"
           @submit="submitManualOverride"
         />
@@ -27,7 +27,7 @@
 
       <div>
         <AdminOverrideForm
-          description="Use this when an assigned availability must move from the current reservation holder to another applicant."
+          description="Use this when an assigned parking offer must move from the current reservation holder to another employee."
           :loading="replacementLoading"
           mode="replacement"
           submit-label="Replace reservation"

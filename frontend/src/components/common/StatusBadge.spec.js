@@ -9,7 +9,14 @@ describe("StatusBadge", () => {
       props: { status: "current_active" },
     });
 
-    expect(wrapper.text()).toBe("current active");
+    expect(wrapper.text()).toBe("Current");
     expect(wrapper.classes()).toContain("status-badge--current-active");
+  });
+
+  it("translates request statuses without changing the raw status class", () => {
+    const wrapper = mount(StatusBadge, { props: { status: "pending" } });
+
+    expect(wrapper.text()).toBe("Waiting for assignment");
+    expect(wrapper.classes()).toContain("status-badge--pending");
   });
 });

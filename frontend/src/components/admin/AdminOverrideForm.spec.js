@@ -37,18 +37,18 @@ describe("AdminOverrideForm", () => {
     ]);
   });
 
-  it("shows applicant ID guidance for replacement overrides", () => {
+  it("shows employee ID guidance for replacement overrides", () => {
     const wrapper = mountForm("replacement");
 
-    expect(wrapper.text()).toContain("Use Applicant ID when no pending application exists after assignment.");
+    expect(wrapper.text()).toContain("Use Employee ID when no waiting request exists after assignment.");
     expect(wrapper.find('input[name="replacement-applicant-id"]').exists()).toBe(true);
   });
 
   it("explains override IDs and audit reason", () => {
     const wrapper = mountForm("replacement");
 
-    expect(wrapper.text()).toContain("Availability ID identifies the availability window");
-    expect(wrapper.text()).toContain("Application ID uses an existing request");
+    expect(wrapper.text()).toContain("Find references first: open Requests");
+    expect(wrapper.text()).toContain("Request ID uses an existing request");
     expect(wrapper.text()).toContain("Reason is required and appears in audit history");
   });
 
@@ -72,7 +72,7 @@ describe("AdminOverrideForm", () => {
     await wrapper.get('textarea[name="replacement-reason"]').setValue("Replacement reason");
     await wrapper.get("form").trigger("submit");
 
-    expect(wrapper.text()).toContain("Enter either an application ID or an applicant ID.");
+    expect(wrapper.text()).toContain("Enter either a request ID or an employee ID.");
     expect(wrapper.emitted("submit")).toBeUndefined();
   });
 
@@ -82,7 +82,7 @@ describe("AdminOverrideForm", () => {
     await wrapper.get('textarea[name="replacement-reason"]').setValue("Replacement reason");
     await wrapper.get("form").trigger("submit");
 
-    expect(wrapper.text()).toContain("Enter either an application ID or an applicant ID.");
+    expect(wrapper.text()).toContain("Enter either a request ID or an employee ID.");
     expect(wrapper.emitted("submit")).toBeUndefined();
   });
 });

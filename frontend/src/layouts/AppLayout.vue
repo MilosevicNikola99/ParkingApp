@@ -86,20 +86,27 @@ defineEmits(["logout"]);
 const sidebarStorageKey = "parking-app-sidebar-collapsed";
 const isAdmin = computed(() => props.user?.role === "admin");
 const isCollapsed = ref(localStorage.getItem(sidebarStorageKey) === "true");
-const primaryNavItems = [
+const roleNavItems = {
+  employee: [
+    { to: "/availabilities", label: "Available spots", icon: "A" },
+    { to: "/my-applications", label: "My requests", icon: "Q" },
+    { to: "/my-reservations", label: "My reservations", icon: "R" },
+  ],
+  parking_owner: [
+    { to: "/my-availabilities", label: "Offer my spot", icon: "O" },
+  ],
+};
+const primaryNavItems = computed(() => [
   { to: "/dashboard", label: "Dashboard", icon: "D" },
-  { to: "/availabilities", label: "Available spots", icon: "A" },
-  { to: "/my-availabilities", label: "My availabilities", icon: "O" },
-  { to: "/my-applications", label: "My applications", icon: "Q" },
-  { to: "/my-reservations", label: "My reservations", icon: "R" },
+  ...(roleNavItems[props.user?.role] || []),
   { to: "/help", label: "Help", icon: "H" },
-];
+]);
 const adminNavItems = [
   { to: "/admin", label: "Admin dashboard", icon: "D" },
   { to: "/admin/teams", label: "Teams", icon: "T" },
   { to: "/admin/users", label: "Users", icon: "U" },
   { to: "/admin/parking-spots", label: "Parking spots", icon: "P" },
-  { to: "/admin/parking-applications", label: "Applications", icon: "A" },
+  { to: "/admin/parking-applications", label: "Requests", icon: "Q" },
   { to: "/admin/reservations", label: "Reservations", icon: "R" },
   { to: "/admin/audit-logs", label: "Audit logs", icon: "L" },
   { to: "/admin/overrides", label: "Overrides", icon: "O" },

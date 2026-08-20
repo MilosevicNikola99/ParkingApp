@@ -5,7 +5,7 @@
         <p class="page-toolbar__eyebrow">User guide</p>
         <h2>How to use ParkingApp</h2>
         <p class="page-toolbar__description">
-          Quick role-based guidance for applying, publishing availability, and managing parking operations.
+          Quick role-based guidance for requesting parking, offering a spot, and managing operations.
         </p>
       </div>
     </div>
@@ -16,20 +16,20 @@
         <h2>Request parking</h2>
         <ol>
           <li>Open Available spots and choose a parking window.</li>
-          <li>Apply for the spot you need.</li>
-          <li>Track the request in My applications.</li>
+          <li>Request the spot you need.</li>
+          <li>Track the request in My requests.</li>
           <li>Check My reservations after assignment.</li>
         </ol>
       </article>
 
       <article class="help-card">
         <p class="help-card__eyebrow">Parking owner</p>
-        <h2>Publish availability</h2>
+        <h2>Offer a parking spot</h2>
         <ol>
-          <li>Ask an administrator for your parking spot ID.</li>
-          <li>Open My availabilities.</li>
-          <li>Enter the spot ID, start time, end time, and note.</li>
-          <li>Publish and review the status in your list.</li>
+          <li>Open Offer my spot.</li>
+          <li>Confirm the assigned parking spot shown automatically.</li>
+          <li>Choose when the spot is free and add an optional note.</li>
+          <li>Publish the offer and review its status in the list.</li>
         </ol>
       </article>
 
@@ -38,7 +38,7 @@
         <h2>Manage operations</h2>
         <ol>
           <li>Create teams, users, and parking spots.</li>
-          <li>Review applications and reservations.</li>
+          <li>Review requests and reservations.</li>
           <li>Use Overrides only when an assignment needs correction.</li>
           <li>Use Audit logs and Reports to review activity.</li>
         </ol>
@@ -52,16 +52,16 @@
       </div>
       <div class="status-reference-grid">
         <div>
-          <h3>Availability</h3>
-          <p><strong>open</strong> means employees can apply. <strong>assigned</strong> means a reservation exists.</p>
+          <h3>Parking offers</h3>
+          <p><strong>Open for requests</strong> means employees can request the spot. <strong>Assigned</strong> means a reservation exists.</p>
         </div>
         <div>
-          <h3>Applications</h3>
-          <p><strong>pending</strong> is waiting, <strong>selected</strong> received a reservation, and rejected was not selected.</p>
+          <h3>Requests</h3>
+          <p><strong>Waiting for assignment</strong> means no decision yet. <strong>Selected</strong> received a reservation, and <strong>Not selected</strong> did not.</p>
         </div>
         <div>
           <h3>Reservations</h3>
-          <p><strong>active</strong> is currently assigned. Cancelled and completed records remain in history.</p>
+          <p><strong>Active</strong> is currently assigned. Cancelled and completed records remain in history.</p>
         </div>
       </div>
     </section>
