@@ -5,6 +5,8 @@
 <script setup>
 import { computed } from "vue";
 
+import { getStatusLabel } from "@/utils/display";
+
 const props = defineProps({
   status: {
     type: String,
@@ -14,5 +16,5 @@ const props = defineProps({
 
 const normalizedStatus = computed(() => props.status.toLowerCase().replaceAll("_", "-"));
 const statusClass = computed(() => `status-badge--${normalizedStatus.value}`);
-const label = computed(() => props.status.replaceAll("_", " "));
+const label = computed(() => getStatusLabel(props.status));
 </script>

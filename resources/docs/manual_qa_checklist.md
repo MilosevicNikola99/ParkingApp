@@ -24,9 +24,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_e2e_smoke.
 The automated suite covers:
 
 - admin login and disposable team, owner, employee A, employee B, and parking-spot creation through the UI;
-- owner availability publication and own-list verification;
-- employee applications, the real one-shot assignment command, and reservation verification;
-- Applicant ID replacement plus blank reason, unknown applicant, and current-reserved-user errors;
+- owner parking-offer publication and own-list verification;
+- employee requests, the real one-shot assignment command, and reservation verification;
+- Employee ID replacement plus blank reason, unknown employee, and current-reserved-user errors;
 - post-replacement employee, reservation-history, audit-log, and report checks;
 - unauthenticated/admin-route redirects, role-specific navigation, desktop flow, and a `390x844` override-form smoke check.
 
@@ -47,12 +47,12 @@ If Docker reports named-pipe access errors, run from a Windows account with Dock
 ## Employee Workflows
 
 - [ ] Employee can open the dashboard and see employee-relevant navigation only.
-- [ ] Employee can view open parking availabilities.
-- [ ] Employee can submit an application for an eligible availability.
-- [ ] Duplicate application attempt is blocked with a clear error.
-- [ ] Employee cannot apply to their own spot availability.
-- [ ] Employee can view their applications and statuses.
-- [ ] Employee can cancel a pending application.
+- [ ] Employee can view open parking offers with spot code/location and owner context.
+- [ ] Employee can submit a request for an eligible parking offer.
+- [ ] Duplicate request attempt is blocked with a clear error.
+- [ ] Employee cannot request their own parking offer.
+- [ ] Employee can view **My requests** with friendly statuses and secondary references.
+- [ ] Employee can cancel a request that is waiting for assignment.
 - [ ] Employee can view assigned reservations.
 - [ ] Employee can cancel their own active reservation where the workflow allows it.
 
@@ -62,11 +62,11 @@ If Docker reports named-pipe access errors, run from a Windows account with Dock
 - [ ] Owner with one active assigned spot sees that spot automatically and no raw spot ID input.
 - [ ] Owner with multiple active assigned spots can select only from their own spots.
 - [ ] Owner with no active assigned spot sees contact-admin guidance and cannot publish.
-- [ ] Owner can publish a new availability without typing a parking spot ID.
+- [ ] Owner can publish a new parking offer without typing a parking spot ID.
 - [ ] Owner cannot publish for another owner's or an inactive parking spot through a direct API request.
 - [ ] Overlapping availability creation is blocked.
-- [ ] Owner can view submitted applications for their availability where expected.
-- [ ] Owner can cancel an availability where the workflow allows it.
+- [ ] Owner can review published offers with friendly spot labels and statuses.
+- [ ] Owner can cancel a parking offer where the workflow allows it.
 - [ ] Due availability assignment can be triggered through the backend command.
 - [ ] Assignment creates the expected reservation and audit entry.
 
@@ -77,7 +77,7 @@ If Docker reports named-pipe access errors, run from a Windows account with Dock
 - [ ] Admin can create, edit, and deactivate users.
 - [ ] Admin can create and update teams.
 - [ ] Admin can create and update parking spots.
-- [ ] Admin can view applications, reservations, assignment history, and audit logs.
+- [ ] Admin can view requests, reservations, assignment history, and audit logs with human-readable context.
 - [ ] Admin can manually assign a reservation.
 - [ ] Admin can replace an active reservation through override workflow.
 - [ ] Admin can cancel an active reservation through override workflow.
@@ -498,3 +498,26 @@ Passwords were generated only for disposable local QA accounts and were not comm
 Status: APPROVED.
 
 Reason: the Applicant ID replacement workflow passed through the actual browser UI, critical MVP browser regression flows passed, the dependency audit blocker remains resolved, the responsive UI defect found during QA was fixed and reverified, and no unresolved release blockers remain.
+
+## Human-Readable Operations Regression - 2026-08-20
+
+### Automated Browser Evidence
+
+- Disposable six-flow Chromium MVP smoke: `6` passed in `15.6s`.
+- Disposable user-guide screenshot workflow: `4` passed in `13.3s`; all `16` expected screenshots were generated.
+- The generated employee, parking-owner, admin, and mobile screenshots were inspected for clipped controls, page-level overflow, readable status labels, and workflow terminology.
+
+### UX Checks
+
+- Employee navigation and pages use `My requests`; parking-owner navigation uses `Offer my spot`; admin request operations use `Requests` and `Employee parking requests`.
+- User-facing statuses are readable phrases such as `Waiting for assignment`, `Open for requests`, and `Not selected`; API and database enum values remain unchanged.
+- Employee request and reservation tables show parking spot context before technical references.
+- Parking owners select their assigned spot by code and location and do not enter a raw parking spot ID.
+- Admin request and reservation tables show employee and parking spot context while retaining IDs as secondary references.
+- Desktop table actions remained visible after responsive width adjustments, and the mobile admin override screenshot remained free of page-level horizontal overflow.
+
+### Result
+
+Status: PASSED.
+
+No release-candidate blocker was found in the focused naming, status-label, operational-table, or responsive screenshot regression.

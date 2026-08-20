@@ -4,6 +4,7 @@ from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.parking_reservation import ParkingReservationStatus
+from app.schemas.display import ParkingSpotDisplay, UserDisplay
 
 
 def is_timezone_aware(value: datetime) -> bool:
@@ -151,6 +152,8 @@ class ParkingReservationRead(BaseModel):
     status: ParkingReservationStatus
     created_at: datetime
     updated_at: datetime
+    parking_spot: ParkingSpotDisplay | None = None
+    reserved_for_user: UserDisplay | None = None
 
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 

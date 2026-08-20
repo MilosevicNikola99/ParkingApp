@@ -24,9 +24,21 @@ describe("AppLayout navigation", () => {
     expect(adminLayout.text()).toContain("Parking spots");
     expect(adminLayout.text()).toContain("Audit logs");
     expect(adminLayout.text()).toContain("Reports");
+    expect(adminLayout.text()).toContain("Requests");
+    expect(adminLayout.text()).not.toContain("Available spots");
     expect(employeeLayout.text()).not.toContain("Admin dashboard");
     expect(employeeLayout.text()).not.toContain("Audit logs");
     expect(employeeLayout.text()).not.toContain("Reports");
+    expect(employeeLayout.text()).toContain("My requests");
+    expect(employeeLayout.text()).not.toContain("Offer my spot");
+  });
+
+  it("shows parking owner tasks without employee request navigation", () => {
+    const wrapper = mountLayout({ first_name: "Olivia", last_name: "Owner", role: "parking_owner" });
+
+    expect(wrapper.text()).toContain("Offer my spot");
+    expect(wrapper.text()).not.toContain("Available spots");
+    expect(wrapper.text()).not.toContain("My requests");
   });
 
   it("shows the Help entry for authenticated users", () => {

@@ -9484,3 +9484,66 @@ Status: READY.
 ### Next Suggested Task
 
 Obtain staging approval and operator inputs, execute the checklist on a clean staging server, record failures and evidence, and treat any failed acceptance item as the next deployment defect before considering production.
+
+## Human-Readable Frontend Operations And UX Clarity
+
+### Task Name
+
+Improve frontend naming, status clarity, operational context, and role-specific navigation without changing domain behavior.
+
+### Files Changed
+
+- Backend display schemas, application relationship loading, and focused API/schema tests under `backend/app` and `backend/tests`.
+- Frontend display utilities, shared status badge, role navigation, dashboards, employee/owner/admin operational views, styles, and unit tests under `frontend/src`.
+- Playwright MVP smoke and user-guide screenshot specifications under `frontend/e2e`.
+- `frontend/package-lock.json` through the existing dependency ranges.
+- `scripts/run_e2e_smoke.ps1` and `scripts/generate_user_guide_screenshots.ps1`.
+- `resources/docs/user_guide.md`, `resources/docs/manual_qa_checklist.md`, `resources/docs/developer_handoff.md`, this log, and refreshed user-guide screenshots.
+
+### Naming And Display Decisions
+
+- Employee-facing `applications` are presented as `requests`; owner-facing `availabilities` are presented as `parking offers`.
+- Routes, API payload fields, database columns, enum values, CSV identifiers, and authorization rules are unchanged.
+- A shared frontend mapping translates raw statuses into readable labels such as `Waiting for assignment`, `Open for requests`, and `Not selected`.
+- Additive nested read-schema summaries provide parking spot and user context without exposing password hashes or changing persistence.
+- Technical IDs remain available as secondary references. Admin override ID inputs remain advanced controls; searchable selectors are documented as follow-up work.
+
+### Review Notes
+
+- Repository eager loading covers the nested availability/spot context required by async response serialization.
+- Existing service/repository boundaries and ownership checks remain intact.
+- Nested display schemas expose only operational identity fields; recursive API assertions verify that password fields are absent.
+- Desktop table widths and header wrapping were adjusted after screenshot review so action controls remain visible. Mobile overflow behavior remained intact.
+- Windows E2E database host ports moved from reserved ports `55435`/`55438` to `15435`/`15438`; this changes only disposable test infrastructure.
+- `npm audit fix` updated the lockfile within existing manifest ranges and removed the reported frontend vulnerabilities; no unrelated dependency was added.
+
+### Tests And Verification
+
+- Frontend unit tests: `20` files, `64` tests passed.
+- Frontend production build: passed (`131` modules transformed).
+- Frontend dependency audit: `npm audit --omit=optional` passed with `0` vulnerabilities.
+- Focused backend schema tests in the backend image: `45` passed.
+- Full backend tests in the managed host environment: `727` passed, `21` skipped, `1` warning, and `1` environment-only failure in the existing PowerShell backup checksum test because the managed Windows shell lacked `Get-FileHash`.
+- Full containerized backend suite excluding that PowerShell-only backup module: passed.
+- Backend compile check: passed.
+- Alembic heads/history: passed; latest revision remains `0010 (head)` and no migration was added.
+- `docker-compose build backend frontend`: passed.
+- Disposable Chromium MVP smoke: `6` passed in `15.6s`; migrations reached `0010` and cleanup succeeded.
+- Disposable user-guide screenshot workflow: `4` passed in `13.3s`; `16` screenshots were generated and cleanup succeeded.
+- Visual review passed for representative employee, parking-owner, admin, and mobile screens after the final responsive adjustments.
+
+### Known Limitations
+
+- The managed host cannot fully execute the existing PowerShell backup checksum test; this is unrelated to the changed frontend/display code and the remaining backend verification passed.
+- Admin override selectors still require known request or employee references. Human-readable discovery is available on Requests and Reservations, while searchable override selectors remain future work.
+- The unrelated untracked `.idea/vcs.xml` file was present before this task and was not modified or included in scope.
+
+### Completion Classification
+
+Status: READY.
+
+The frontend tests, production build, dependency audit, six-flow browser smoke, screenshot generation, and focused backend display-contract tests all pass. The reviewed screens use role-appropriate workflow names, readable statuses, and human context while preserving backend contracts.
+
+### Next Suggested Task
+
+Run the approved staging deployment rehearsal. Treat any failed acceptance item as the next deployment defect; do not add unrelated product functionality before staging evidence is recorded.

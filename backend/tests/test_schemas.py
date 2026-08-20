@@ -156,6 +156,18 @@ def test_parking_availability_schemas_validate_and_serialize_from_model() -> Non
         created_at=start_at,
         updated_at=start_at,
     )
+    availability.parking_spot = ParkingSpot(id=3, code="A-03", location="North garage")
+    availability.owner = User(
+        id=7,
+        email="owner@example.com",
+        username="owner",
+        first_name="Olivia",
+        last_name="Owner",
+        hashed_password="not-returned",
+        role=UserRole.PARKING_OWNER,
+        team_id=2,
+        is_active=True,
+    )
 
     read_schema = ParkingAvailabilityRead.model_validate(availability)
     dumped = read_schema.model_dump(mode="json")
@@ -172,8 +184,8 @@ def test_parking_availability_schemas_validate_and_serialize_from_model() -> Non
     assert dumped["parking_spot_id"] == 3
     assert dumped["owner_id"] == 7
     assert dumped["status"] == "open"
-    assert "parking_spot" not in dumped
-    assert "owner" not in dumped
+    assert dumped["parking_spot"] == {"id": 3, "code": "A-03", "location": "North garage"}
+    assert dumped["owner"]["first_name"] == "Olivia"
     assert "hashed_password" not in dumped
 
 
@@ -238,6 +250,27 @@ def test_parking_application_schemas_validate_and_serialize_from_model() -> None
         created_at=now,
         updated_at=now,
     )
+    application.availability = ParkingAvailability(
+        id=5,
+        parking_spot_id=3,
+        owner_id=8,
+        start_at=now,
+        end_at=now + timedelta(hours=8),
+        status=ParkingAvailabilityStatus.OPEN,
+        priority_until=None,
+    )
+    application.availability.parking_spot = ParkingSpot(id=3, code="A-03", location="North garage")
+    application.applicant = User(
+        id=7,
+        email="employee@example.com",
+        username="employee",
+        first_name="Erin",
+        last_name="Employee",
+        hashed_password="not-returned",
+        role=UserRole.EMPLOYEE,
+        team_id=2,
+        is_active=True,
+    )
 
     read_schema = ParkingApplicationRead.model_validate(application)
     dumped = read_schema.model_dump(mode="json")
@@ -255,8 +288,8 @@ def test_parking_application_schemas_validate_and_serialize_from_model() -> None
     assert dumped["availability_id"] == 5
     assert dumped["applicant_id"] == 7
     assert dumped["status"] == "pending"
-    assert "availability" not in dumped
-    assert "applicant" not in dumped
+    assert dumped["availability"]["parking_spot"]["code"] == "A-03"
+    assert dumped["applicant"]["email"] == "employee@example.com"
     assert "hashed_password" not in dumped
 
 
@@ -300,6 +333,18 @@ def test_parking_reservation_schemas_validate_and_serialize_from_model() -> None
         created_at=start_at,
         updated_at=start_at,
     )
+    reservation.parking_spot = ParkingSpot(id=3, code="A-03", location="North garage")
+    reservation.reserved_for_user = User(
+        id=7,
+        email="employee@example.com",
+        username="employee",
+        first_name="Erin",
+        last_name="Employee",
+        hashed_password="not-returned",
+        role=UserRole.EMPLOYEE,
+        team_id=2,
+        is_active=True,
+    )
 
     read_schema = ParkingReservationRead.model_validate(reservation)
     dumped = read_schema.model_dump(mode="json")
@@ -318,8 +363,8 @@ def test_parking_reservation_schemas_validate_and_serialize_from_model() -> None
     assert dumped["parking_spot_id"] == 3
     assert dumped["reserved_for_user_id"] == 7
     assert dumped["status"] == "active"
-    assert "reserved_for_user" not in dumped
-    assert "parking_spot" not in dumped
+    assert dumped["reserved_for_user"]["username"] == "employee"
+    assert dumped["parking_spot"]["location"] == "North garage"
     assert "hashed_password" not in dumped
 
 

@@ -1,5 +1,6 @@
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
+import json
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -208,10 +209,12 @@ def availability_payload(
 
 
 def assert_no_sensitive_fields(payload: dict[str, object]) -> None:
-    assert "owner" not in payload
-    assert "parking_spot" not in payload
-    assert "hashed_password" not in payload
-    assert "password" not in payload
+    if "parking_spot_id" in payload:
+        assert payload["owner"]["email"]
+        assert payload["parking_spot"]["code"]
+    serialized_payload = json.dumps(payload)
+    assert "hashed_password" not in serialized_payload
+    assert "password" not in serialized_payload
 
 
 def test_owner_can_create_availability_for_own_active_parking_spot(
@@ -563,6 +566,8 @@ def test_owner_can_assign_availability_with_one_pending_application(
         "status",
         "created_at",
         "updated_at",
+        "parking_spot",
+        "reserved_for_user",
     }
     assert ParkingAvailabilityRepository(db_session).get_by_id(availability.id).status is (
         ParkingAvailabilityStatus.ASSIGNED

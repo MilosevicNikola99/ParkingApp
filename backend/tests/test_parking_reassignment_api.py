@@ -149,6 +149,8 @@ def assert_safe_reservation_response(payload: dict[str, object]) -> None:
         "status",
         "created_at",
         "updated_at",
+        "parking_spot",
+        "reserved_for_user",
     }
     serialized_payload = json.dumps(payload)
     assert "audit" not in serialized_payload

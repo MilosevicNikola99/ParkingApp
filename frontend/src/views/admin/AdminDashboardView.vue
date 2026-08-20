@@ -37,7 +37,7 @@
           <span>Daily work</span>
         </div>
         <div class="dashboard-grid dashboard-grid--admin-group">
-          <DashboardCard title="Applications" metric="Review" label="Inspect submitted requests and their assignment status." to="/admin/parking-applications" />
+          <DashboardCard title="Requests" metric="Review" label="Inspect employee parking requests and their assignment status." to="/admin/parking-applications" />
           <DashboardCard title="Reservations" metric="History" label="Review active and historical reservation records." to="/admin/reservations" />
           <DashboardCard title="Overrides" metric="Override" label="Perform reason-required manual or replacement assignments." to="/admin/overrides" />
         </div>

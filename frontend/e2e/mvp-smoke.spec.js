@@ -132,12 +132,12 @@ test.describe.serial("MVP browser smoke", () => {
     await page.getByLabel("End").fill(localValue(endAt));
     await page.getByLabel("Note").fill(names.availabilityNote);
     const responsePromise = page.waitForResponse(responseFor("/parking-availabilities", "POST"));
-    await page.getByRole("button", { name: "Publish" }).click();
+    await page.getByRole("button", { name: "Publish offer" }).click();
     const response = await responsePromise;
     expect(response.status()).toBe(201);
     state.availability = await response.json();
     await expect(page.getByRole("alert")).toContainText(
-      "Availability published for " + state.spot.code + " - " + state.spot.location + ".",
+      "Parking offer published for " + state.spot.code + " - " + state.spot.location + ".",
     );
     await expect(page.getByRole("row").filter({ hasText: names.availabilityNote })).toBeVisible();
   });
@@ -146,7 +146,7 @@ test.describe.serial("MVP browser smoke", () => {
     await expect(page.getByRole("navigation", { name: "Primary navigation" })).not.toContainText("Admin dashboard");
     state.applicationA = await applyForRunAvailability(page);
     await page.goto("/my-applications");
-    await expect(page.getByRole("row").filter({ hasText: `#${state.applicationA.id}` })).toContainText("pending");
+    await expect(page.getByRole("row").filter({ hasText: `Request #${state.applicationA.id}` })).toContainText("Waiting for assignment");
     await logout(page);
 
     await login(page, credentials.employeeB);
@@ -157,22 +157,22 @@ test.describe.serial("MVP browser smoke", () => {
 
     await login(page, credentials.employeeA);
     await page.goto("/my-reservations");
-    const reservationRow = page.getByRole("row").filter({ hasText: `#${state.spot.id}` });
-    await expect(reservationRow).toContainText("active");
-    state.reservationId = Number((await reservationRow.getByRole("cell").first().innerText()).replace("#", ""));
+    const reservationRow = page.getByRole("row").filter({ hasText: names.spot });
+    await expect(reservationRow).toContainText("Active");
+    state.reservationId = Number((await reservationRow.innerText()).match(/Reservation #(\d+)/)[1]);
   });
 
-  test("admin validates and performs Applicant ID replacement", async ({ page }) => {
+  test("admin validates and performs Employee ID replacement", async ({ page }) => {
     await login(page, credentials.admin);
     await page.goto("/admin/overrides");
     const replacement = page.getByRole("region", { name: "Replacement assignment" });
 
     await replacement.getByLabel("Availability ID").fill(String(state.availability.id));
-    await replacement.getByLabel("Applicant ID").fill(String(state.employeeB.id));
+    await replacement.getByLabel("Employee ID").fill(String(state.employeeB.id));
     await replacement.getByRole("button", { name: "Replace reservation" }).click();
     await expect(replacement.getByRole("alert")).toHaveText("Reason is required.");
 
-    await replacement.getByLabel("Applicant ID").fill("99999999");
+    await replacement.getByLabel("Employee ID").fill("99999999");
     await replacement.getByLabel("Reason").fill("E2E invalid applicant validation");
     const invalidResponse = page.waitForResponse(
       responseFor(`/admin/parking-availabilities/${state.availability.id}/replace-reservation`, "POST"),
@@ -181,7 +181,7 @@ test.describe.serial("MVP browser smoke", () => {
     expect((await invalidResponse).status()).toBe(404);
     await expect(page.getByRole("alert").filter({ hasText: "selected applicant" })).toBeVisible();
 
-    await replacement.getByLabel("Applicant ID").fill(String(state.employeeA.id));
+    await replacement.getByLabel("Employee ID").fill(String(state.employeeA.id));
     await replacement.getByLabel("Reason").fill("E2E current reservation validation");
     const currentResponse = page.waitForResponse(
       responseFor(`/admin/parking-availabilities/${state.availability.id}/replace-reservation`, "POST"),
@@ -190,7 +190,7 @@ test.describe.serial("MVP browser smoke", () => {
     expect((await currentResponse).status()).toBe(409);
     await expect(page.getByRole("alert").filter({ hasText: "already has the active reservation" })).toBeVisible();
 
-    await replacement.getByLabel("Applicant ID").fill(String(state.employeeB.id));
+    await replacement.getByLabel("Employee ID").fill(String(state.employeeB.id));
     await replacement.getByLabel("Reason").fill(`E2E replacement ${runId}`);
     const replacementResponse = page.waitForResponse(
       responseFor(`/admin/parking-availabilities/${state.availability.id}/replace-reservation`, "POST"),
@@ -215,7 +215,7 @@ test.describe.serial("MVP browser smoke", () => {
 
     await login(page, credentials.employeeB);
     await page.goto("/my-reservations");
-    await expect(page.getByRole("row").filter({ hasText: `#${state.reservationId}` })).toContainText("active");
+    await expect(page.getByRole("row").filter({ hasText: `Reservation #${state.reservationId}` })).toContainText("Active");
     await logout(page);
 
     await login(page, credentials.admin);
@@ -227,7 +227,7 @@ test.describe.serial("MVP browser smoke", () => {
     await page.getByLabel("Availability ID").fill(String(state.availability.id));
     await page.getByRole("button", { name: "Apply filters" }).click();
     const auditSection = page.getByRole("region", { name: "Assignment audit logs" });
-    await expect(auditSection).toContainText("admin_override");
+    await expect(auditSection).toContainText("Admin override");
     await expect(auditSection).toContainText(`#${state.employeeB.id}`);
 
     await page.goto("/admin/reports");
@@ -252,7 +252,7 @@ test.describe.serial("MVP browser smoke", () => {
     await page.goto("/admin/overrides");
     const navigation = page.getByRole("navigation", { name: "Primary navigation" });
     const activeOverrideLink = navigation.getByRole("link", { name: "Overrides" });
-    const availableSpotsLink = navigation.getByRole("link", { name: "Available spots" });
+    const requestsLink = navigation.getByRole("link", { name: "Requests" });
     const helpLink = navigation.getByRole("link", { name: "Help" });
     await expect(helpLink).toBeVisible();
     await helpLink.click();
@@ -262,10 +262,10 @@ test.describe.serial("MVP browser smoke", () => {
     await expect(activeOverrideLink).toHaveAttribute("aria-current", "page");
     await expect(activeOverrideLink).toHaveCSS("background-color", "rgb(255, 255, 255)");
     await expect(activeOverrideLink).toHaveCSS("color", "rgb(30, 58, 138)");
-    await expect(availableSpotsLink).toHaveCSS("color", "rgb(239, 246, 255)");
+    await expect(requestsLink).toHaveCSS("color", "rgb(239, 246, 255)");
 
     const expandedAlignment = await navigation.evaluate((nav) => {
-      const labels = ["Dashboard", "Available spots", "My availabilities", "Admin dashboard", "Applications", "Overrides"];
+      const labels = ["Dashboard", "Help", "Admin dashboard", "Teams", "Requests", "Overrides"];
       return labels.map((label) => {
         const link = [...nav.querySelectorAll(".app-shell__nav-link")].find(
           (item) => item.querySelector(".app-shell__nav-label")?.textContent.trim() === label,
@@ -314,7 +314,7 @@ test.describe.serial("MVP browser smoke", () => {
 
     const replacement = page.getByRole("region", { name: "Replacement assignment" });
     await replacement.getByLabel("Availability ID").fill(String(state.availability.id));
-    await replacement.getByLabel("Applicant ID").fill(String(state.employeeA.id));
+    await replacement.getByLabel("Employee ID").fill(String(state.employeeA.id));
     await replacement.getByRole("button", { name: "Replace reservation" }).click();
     await expect(replacement.getByRole("alert")).toHaveText("Reason is required.");
     await expect(replacement.getByRole("alert")).toBeInViewport();

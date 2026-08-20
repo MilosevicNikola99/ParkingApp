@@ -1,6 +1,6 @@
 <template>
   <AppLayout :user="currentUser" title="Assignment audit logs" @logout="handleLogout">
-    <AdminPageHeader description="Review how assignments were made, which request was selected, and why other applications were rejected." title="Assignment decisions">
+    <AdminPageHeader description="Review how assignments were made, which request was selected, and why other requests were not selected." title="Assignment decisions">
       <BaseButton :loading="isLoading" size="compact" variant="secondary" @click="loadAuditLogs">
         Refresh
       </BaseButton>
@@ -87,11 +87,11 @@
             <tr v-for="auditLog in auditLogs" :key="auditLog.id">
               <td class="data-table__id" data-label="Log ID">#{{ auditLog.id }}</td><td data-label="Availability ID">#{{ auditLog.availability_id }}</td><td data-label="Reservation ID">#{{ auditLog.reservation_id }}</td><td data-label="Selected application ID">#{{ auditLog.selected_application_id }}</td><td data-label="Selected user ID">#{{ auditLog.selected_user_id }}</td><td data-label="Trigger"><StatusBadge :status="auditLog.trigger_source" /></td><td data-label="Ranking policy">{{ auditLog.ranking_policy }}</td><td class="data-table__decision" data-label="Decision details">
                 <JsonDetailsViewer
-                  :summary="`${auditLog.ranking_details.length} ranked applications`"
+                  :summary="`${auditLog.ranking_details.length} ranked requests`"
                   :value="auditLog.ranking_details"
                 />
                 <JsonDetailsViewer
-                  :summary="`${auditLog.rejected_application_ids.length} rejected applications`"
+                  :summary="`${auditLog.rejected_application_ids.length} requests not selected`"
                   :value="auditLog.rejected_application_ids"
                 />
               </td>

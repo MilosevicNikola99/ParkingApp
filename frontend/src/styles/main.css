@@ -634,12 +634,12 @@ p {
 
 .data-table {
   border-collapse: collapse;
-  min-width: 980px;
+  min-width: 900px;
   width: 100%;
 }
 
 .data-table--wide {
-  min-width: 1120px;
+  min-width: 940px;
 }
 
 .data-table th,
@@ -675,6 +675,39 @@ p {
   font-weight: 800;
 }
 
+.data-table__primary,
+.data-table__reference {
+  display: block;
+}
+
+.data-table__primary {
+  color: var(--color-gray-900);
+  font-weight: 800;
+}
+
+.data-table__reference {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: var(--space-1);
+}
+
+.data-table__range-separator {
+  color: var(--color-text-muted);
+  display: block;
+  font-size: 0.75rem;
+  margin-block: 2px;
+}
+
+.technical-id-form__heading {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  grid-column: 1 / -1;
+  margin: 0;
+  text-transform: uppercase;
+}
+
 .data-table__note {
   max-width: 260px;
   overflow-wrap: anywhere;
@@ -708,7 +741,6 @@ p {
   font-size: 0.75rem;
   font-weight: 800;
   padding: var(--space-1) var(--space-2);
-  text-transform: capitalize;
   white-space: nowrap;
 }
 
@@ -1312,11 +1344,15 @@ a.dashboard-card:hover {
 }
 
 .data-table th {
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .data-table td {
   overflow-wrap: anywhere;
+}
+
+.data-table .base-button {
+  white-space: nowrap;
 }
 
 .data-table-wrap {

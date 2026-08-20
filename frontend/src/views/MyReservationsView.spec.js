@@ -30,6 +30,7 @@ describe("MyReservationsView", () => {
         start_at: "2026-06-10T10:00:00Z",
         end_at: "2026-06-10T12:00:00Z",
         status: "active",
+        parking_spot: { id: 22, code: "A-22", location: "North garage" },
       },
       {
         id: 42,
@@ -71,7 +72,7 @@ describe("MyReservationsView", () => {
       status: "cancelled",
     });
     await flushPromises();
-    expect(wrapper.text()).toContain("Reservation #41 cancelled.");
+    expect(wrapper.text()).toContain("Reservation for A-22 - North garage cancelled.");
     expect(wrapper.get('input[aria-label="Cancellation reason for reservation #41"]').attributes()).toHaveProperty(
       "disabled",
     );

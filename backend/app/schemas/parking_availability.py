@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.parking_availability import ParkingAvailabilityStatus
+from app.schemas.display import ParkingSpotDisplay, UserDisplay
 
 
 def is_timezone_aware(value: datetime) -> bool:
@@ -82,5 +83,7 @@ class ParkingAvailabilityRead(BaseModel):
     priority_until: datetime | None
     created_at: datetime
     updated_at: datetime
+    parking_spot: ParkingSpotDisplay | None = None
+    owner: UserDisplay | None = None
 
     model_config = ConfigDict(from_attributes=True, extra="forbid")
