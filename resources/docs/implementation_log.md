@@ -9673,3 +9673,44 @@ Status: READY. Bounded improvements are implemented and verified. Frontend tests
 ### Next Recommended Task
 
 Run the existing staging deployment rehearsal as a separate task and record environment-specific acceptance evidence. Keep searchable override discovery as a bounded frontend follow-up if operator feedback prioritizes it. No deployment or image publication was performed in this review.
+
+## Sidebar Navigation Icon Polish - 2026-09-08
+
+### Scope And Design Issue
+
+The desktop sidebar still used single-letter badges for every route. Those marks were difficult to interpret when labels were visually hidden, while the framed badge treatment made the expanded navigation feel heavier than the rest of the application. This change is limited to the frontend navigation shell, its focused tests, guide screenshots, and this log. Routes, capability checks, persistence, mobile disclosure behavior, authorization, business logic, and backend code are unchanged.
+
+### Icon And Visual Strategy
+
+- Added `NavigationIcon.vue`, a dependency-free inline-SVG component with consistent 20px, `currentColor` stroke icons for every primary and admin destination.
+- Kept icons decorative with `aria-hidden`; expanded links retain visible labels, and collapsed links retain accessible names and titles.
+- Replaced the text collapse chevron with a local SVG and removed framed navigation badges while preserving the Parking brand mark.
+- Refined the blue sidebar gradient, row density, hover state, compact active pill and indicator, Admin separator, and collapsed centering. Existing high-contrast `focus-visible` behavior remains in force.
+- Preserved the responsive reset that shows complete labels in the mobile Menu regardless of the persisted desktop collapsed preference.
+
+### Files Changed
+
+- `frontend/src/components/common/NavigationIcon.vue`
+- `frontend/src/layouts/AppLayout.vue`
+- `frontend/src/layouts/AppLayout.spec.js`
+- `frontend/src/styles/main.css`
+- `frontend/e2e/mvp-smoke.spec.js`
+- The 16 existing PNGs under `resources/docs/images/user_guide`
+- `resources/docs/implementation_log.md`
+
+The user guide wording already describes label-based navigation and does not mention letter badges, so no prose change was required. The manual QA checklist and developer handoff remain accurate.
+
+### Verification
+
+- Frontend unit tests: 22 files, 80 tests passed. New coverage verifies that every navigation entry renders a named decorative SVG while labels/accessibility and role/capability navigation remain intact.
+- Frontend production build: passed; Vite transformed 135 modules.
+- Full `npm audit`: passed with 0 vulnerabilities; no package was added.
+- Disposable Chromium MVP smoke: 6 passed. It verifies one SVG per dynamically rendered link, meaningful Overrides icon output, expanded alignment, active styling and semantics, centered collapsed icons, persisted collapse state, Help navigation, focus behavior, and 390x844 mobile navigation without overflow.
+- User-guide screenshot workflow: 4 passed; all 16 guide screenshots were regenerated. Visual review covered the expanded employee dashboard, expanded admin Overrides page, active route treatment, full admin hierarchy, and 390x844 mobile shell.
+- Backend tests were not run because no backend file changed.
+
+### Completion Classification
+
+Status: READY.
+
+Meaningful local icons replace all navigation letter placeholders, expanded and collapsed states are clear and aligned, mobile/accessibility behavior is preserved, targeted unit/build/audit/browser/screenshot checks pass, and the unrelated pre-existing `.idea/vcs.xml` remains untouched.

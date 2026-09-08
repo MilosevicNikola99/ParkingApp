@@ -69,6 +69,25 @@ describe("AppLayout navigation", () => {
     expect(wrapper.findAllComponents(RouterLinkStub).some((link) => link.props("to") === "/help")).toBe(true);
   });
 
+  it("renders meaningful decorative SVG icons while links keep accessible names", async () => {
+    const wrapper = mountLayout({ id: 1, first_name: "Ada", last_name: "Admin", role: "admin" });
+    await flushPromises();
+
+    const links = wrapper.findAll(".app-shell__nav-link");
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      const icon = link.get("svg.navigation-icon");
+      expect(icon.attributes("aria-hidden")).toBe("true");
+      expect(icon.attributes("data-icon")).toBeTruthy();
+      expect(link.get(".app-shell__nav-label").text()).toBeTruthy();
+      expect(link.get(".app-shell__nav-icon").text()).toBe("");
+    }
+
+    const iconNames = wrapper.findAll("svg.navigation-icon").map((icon) => icon.attributes("data-icon"));
+    expect(iconNames).toContain("dashboard");
+    expect(iconNames).toContain("spots");
+  });
+
   it("collapses and persists sidebar state", async () => {
     const wrapper = mountLayout({ first_name: "Ada", last_name: "Admin", role: "admin" });
 
@@ -77,6 +96,7 @@ describe("AppLayout navigation", () => {
     expect(wrapper.classes()).toContain("app-shell--collapsed");
     expect(localStorage.getItem("parking-app-sidebar-collapsed")).toBe("true");
     expect(wrapper.get('a[aria-label="Dashboard"]').attributes("title")).toBe("Dashboard");
+    expect(wrapper.get('a[aria-label="Dashboard"] .app-shell__nav-label').text()).toBe("Dashboard");
   });
 
   it("identifies the active route when expanded and collapsed", async () => {

@@ -282,8 +282,12 @@ test.describe.serial("MVP browser smoke", () => {
     await page.goto("/admin/overrides");
     await expect(activeOverrideLink).toHaveAttribute("aria-current", "page");
     await expect(activeOverrideLink).toHaveCSS("background-color", "rgb(255, 255, 255)");
-    await expect(activeOverrideLink).toHaveCSS("color", "rgb(30, 58, 138)");
+    await expect(activeOverrideLink).toHaveCSS("color", "rgb(23, 47, 115)");
     await expect(requestsLink).toHaveCSS("color", "rgb(239, 246, 255)");
+    expect(await navigation.locator(".navigation-icon").count()).toBe(
+      await navigation.locator(".app-shell__nav-link").count(),
+    );
+    await expect(activeOverrideLink.locator('svg[data-icon="overrides"]')).toBeVisible();
 
     const expandedAlignment = await navigation.evaluate((nav) => {
       const labels = ["Dashboard", "Help", "Admin dashboard", "Teams", "Requests", "Overrides"];

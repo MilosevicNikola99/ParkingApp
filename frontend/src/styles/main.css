@@ -258,12 +258,12 @@ p {
 }
 
 .app-shell__sidebar {
-  background: var(--color-blue-900);
+  background: linear-gradient(180deg, #1e3a8a 0%, #172f73 100%);
   color: var(--color-white);
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-6);
+  gap: var(--space-6);
+  padding: var(--space-5);
 }
 
 .app-shell__brand {
@@ -273,7 +273,7 @@ p {
 
 .app-shell__nav {
   display: grid;
-  gap: var(--space-2);
+  gap: 6px;
 }
 
 .app-shell__nav a,
@@ -1336,6 +1336,17 @@ a.dashboard-card:hover {
   width: 28px;
 }
 
+.app-shell__nav-icon {
+  background: transparent;
+  border-color: transparent;
+}
+
+.navigation-icon {
+  display: block;
+  height: 20px;
+  width: 20px;
+}
+
 /* Reset the legacy broad nav span rule for the structured navigation. */
 .app-shell__brand-mark,
 .app-shell__brand-text,
@@ -1375,6 +1386,16 @@ a.dashboard-card:hover {
   width: 32px;
 }
 
+.app-shell__collapse-icon {
+  fill: none;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 18px;
+}
+
 .app-shell__collapse:hover,
 .app-shell__collapse:focus-visible {
   background: rgb(255 255 255 / 18%);
@@ -1388,9 +1409,10 @@ a.dashboard-card:hover {
   display: flex !important;
   gap: var(--space-3);
   line-height: 1.25;
-  min-height: 44px;
-  padding: 8px 10px !important;
-  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+  min-height: 42px;
+  padding: 7px 10px !important;
+  position: relative;
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease;
 }
 
 .app-shell__nav-link:hover {
@@ -1400,10 +1422,20 @@ a.dashboard-card:hover {
 }
 
 .app-shell__nav-link.router-link-active {
-  background: var(--color-white);
-  border-color: var(--color-white);
-  color: var(--color-blue-900) !important;
-  box-shadow: 0 1px 3px rgb(15 23 42 / 18%);
+  background: rgb(255 255 255 / 96%);
+  border-color: rgb(255 255 255 / 80%);
+  color: #172f73 !important;
+  box-shadow: 0 3px 10px rgb(8 20 52 / 22%);
+}
+
+.app-shell__nav-link.router-link-active::before {
+  background: var(--color-blue-600);
+  border-radius: 999px;
+  content: "";
+  height: 20px;
+  left: -6px;
+  position: absolute;
+  width: 3px;
 }
 
 .app-shell__nav-label {
@@ -1417,13 +1449,17 @@ a.dashboard-card:hover {
 }
 
 .app-shell__nav-heading {
-  color: #dbeafe;
+  border-top-color: rgb(219 234 254 / 18%);
+  color: #bfdbfe;
+  letter-spacing: 0.12em;
+  margin-top: var(--space-3);
   opacity: 1;
+  padding: var(--space-4) 10px 2px !important;
 }
 
 .app-shell__nav a.router-link-active .app-shell__nav-icon {
-  background: var(--color-blue-100);
-  border-color: #bfdbfe;
+  background: transparent;
+  border-color: transparent;
   color: var(--color-blue-900);
 }
 
@@ -1457,6 +1493,10 @@ a.dashboard-card:hover {
   justify-content: center;
   padding: 7px !important;
   width: 44px;
+}
+
+.app-shell--collapsed .app-shell__nav-link.router-link-active::before {
+  left: -8px;
 }
 
 .app-shell--collapsed .app-shell__nav-icon {

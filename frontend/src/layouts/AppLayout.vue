@@ -14,7 +14,9 @@
           :aria-pressed="isCollapsed"
           @click="toggleSidebar"
         >
-          <span aria-hidden="true">{{ isCollapsed ? ">" : "<" }}</span>
+          <svg class="app-shell__collapse-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path :d="isCollapsed ? 'm7 4 6 6-6 6' : 'm13 4-6 6 6 6'" />
+          </svg>
         </button>
         <button
           ref="mobileMenuButton"
@@ -35,7 +37,7 @@
           :to="item.to"
           @click="isMobileMenuOpen = false"
         >
-          <span class="app-shell__nav-icon" aria-hidden="true">{{ item.icon }}</span>
+          <span class="app-shell__nav-icon"><NavigationIcon :name="item.icon" /></span>
           <span class="app-shell__nav-label">{{ item.label }}</span>
         </RouterLink>
         <template v-if="isAdmin">
@@ -49,7 +51,7 @@
             :to="item.to"
             @click="isMobileMenuOpen = false"
           >
-            <span class="app-shell__nav-icon" aria-hidden="true">{{ item.icon }}</span>
+            <span class="app-shell__nav-icon"><NavigationIcon :name="item.icon" /></span>
             <span class="app-shell__nav-label">{{ item.label }}</span>
           </RouterLink>
         </template>
@@ -80,6 +82,7 @@
 import { computed, ref, watch } from "vue";
 
 import BaseButton from "@/components/common/BaseButton.vue";
+import NavigationIcon from "@/components/common/NavigationIcon.vue";
 import { useOwnedSpotCapability } from "@/composables/useOwnedSpotCapability";
 
 const props = defineProps({
@@ -103,28 +106,28 @@ const mobileMenuButton = ref(null);
 const userRef = computed(() => props.user);
 const { canOfferSpot } = useOwnedSpotCapability(userRef);
 const parkingNavItems = [
-  { to: "/availabilities", label: "Available spots", icon: "A" },
-  { to: "/my-applications", label: "My requests", icon: "Q" },
-  { to: "/my-reservations", label: "My reservations", icon: "R" },
+  { to: "/availabilities", label: "Available spots", icon: "parking" },
+  { to: "/my-applications", label: "My requests", icon: "request" },
+  { to: "/my-reservations", label: "My reservations", icon: "reservation" },
 ];
 const primaryNavItems = computed(() => [
-  { to: "/dashboard", label: "Dashboard", icon: "D" },
+  { to: "/dashboard", label: "Dashboard", icon: "dashboard" },
   ...parkingNavItems,
   ...(canOfferSpot.value
-    ? [{ to: "/my-availabilities", label: "Offer my spot", icon: "O" }]
+    ? [{ to: "/my-availabilities", label: "Offer my spot", icon: "offer" }]
     : []),
-  { to: "/help", label: "Help", icon: "H" },
+  { to: "/help", label: "Help", icon: "help" },
 ]);
 const adminNavItems = [
-  { to: "/admin", label: "Admin dashboard", icon: "D" },
-  { to: "/admin/teams", label: "Teams", icon: "T" },
-  { to: "/admin/users", label: "Users", icon: "U" },
-  { to: "/admin/parking-spots", label: "Parking spots", icon: "P" },
-  { to: "/admin/parking-applications", label: "Requests", icon: "Q" },
-  { to: "/admin/reservations", label: "Reservations", icon: "R" },
-  { to: "/admin/audit-logs", label: "Audit logs", icon: "L" },
-  { to: "/admin/overrides", label: "Overrides", icon: "O" },
-  { to: "/admin/reports", label: "Reports", icon: "S" },
+  { to: "/admin", label: "Admin dashboard", icon: "admin" },
+  { to: "/admin/teams", label: "Teams", icon: "teams" },
+  { to: "/admin/users", label: "Users", icon: "users" },
+  { to: "/admin/parking-spots", label: "Parking spots", icon: "spots" },
+  { to: "/admin/parking-applications", label: "Requests", icon: "inbox" },
+  { to: "/admin/reservations", label: "Reservations", icon: "calendar" },
+  { to: "/admin/audit-logs", label: "Audit logs", icon: "audit" },
+  { to: "/admin/overrides", label: "Overrides", icon: "overrides" },
+  { to: "/admin/reports", label: "Reports", icon: "reports" },
 ];
 
 function toggleSidebar() {
