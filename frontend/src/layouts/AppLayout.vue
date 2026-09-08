@@ -69,6 +69,7 @@
 import { computed, ref, watch } from "vue";
 
 import BaseButton from "@/components/common/BaseButton.vue";
+import { useOwnedSpotCapability } from "@/composables/useOwnedSpotCapability";
 
 const props = defineProps({
   title: {
@@ -86,19 +87,19 @@ defineEmits(["logout"]);
 const sidebarStorageKey = "parking-app-sidebar-collapsed";
 const isAdmin = computed(() => props.user?.role === "admin");
 const isCollapsed = ref(localStorage.getItem(sidebarStorageKey) === "true");
-const roleNavItems = {
-  employee: [
-    { to: "/availabilities", label: "Available spots", icon: "A" },
-    { to: "/my-applications", label: "My requests", icon: "Q" },
-    { to: "/my-reservations", label: "My reservations", icon: "R" },
-  ],
-  parking_owner: [
-    { to: "/my-availabilities", label: "Offer my spot", icon: "O" },
-  ],
-};
+const userRef = computed(() => props.user);
+const { canOfferSpot } = useOwnedSpotCapability(userRef);
+const parkingNavItems = [
+  { to: "/availabilities", label: "Available spots", icon: "A" },
+  { to: "/my-applications", label: "My requests", icon: "Q" },
+  { to: "/my-reservations", label: "My reservations", icon: "R" },
+];
 const primaryNavItems = computed(() => [
   { to: "/dashboard", label: "Dashboard", icon: "D" },
-  ...(roleNavItems[props.user?.role] || []),
+  ...parkingNavItems,
+  ...(canOfferSpot.value
+    ? [{ to: "/my-availabilities", label: "Offer my spot", icon: "O" }]
+    : []),
   { to: "/help", label: "Help", icon: "H" },
 ]);
 const adminNavItems = [

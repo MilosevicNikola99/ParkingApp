@@ -32,9 +32,9 @@ Do not share your password with another user. If you cannot sign in, contact you
 
 ## 3. General Navigation
 
-The main navigation is role-specific. All signed-in users can see **Dashboard** and **Help**.
+The main navigation follows what your account can do. All signed-in users can see **Dashboard**, **Available spots**, **My requests**, **My reservations**, and **Help**. These self-service pages always show data for the signed-in user.
 
-Employees also see **Available spots**, **My requests**, and **My reservations**. Parking owners see **Offer my spot**.
+**Offer my spot** appears for parking-owner accounts and for other users, including administrators, who have an active parking spot assigned to them. If an administrator owns an active spot, the normal parking links and the Admin section appear together.
 
 Administrators also see the Admin section:
 
@@ -48,7 +48,7 @@ Administrators also see the Admin section:
 - Overrides
 - Reports
 
-The Dashboard gives quick links into the main areas for your role. Use **Help** for quick role-specific steps. On desktop, the sidebar can be collapsed or expanded; the application remembers your choice on the same browser.
+The Dashboard gives quick links into the areas available to your account. Administrator access adds management tools; it does not remove normal parking workflows. Use **Help** for quick workflow steps. On desktop, the sidebar can be collapsed or expanded; the application remembers your choice on the same browser.
 
 ![Employee dashboard](images/user_guide/employee-dashboard.png)
 
@@ -60,7 +60,7 @@ Employees use ParkingApp to find available parking, request a spot, review their
 
 ### View Available Spots
 
-Open **Available spots** to see parking offers that can still receive requests. Spot code, location, owner, time window, and team-priority end time are shown when available.
+Open **Available spots** to see parking offers that can still receive requests. Spot code, location, owner, time window, and team-priority end time are shown when available. A person's name appears above their email so both remain readable; technical references are shown separately when needed.
 
 ![Available spots](images/user_guide/employee-open-availabilities.png)
 
@@ -102,7 +102,7 @@ If cancellation is available for an active reservation, enter a reason if needed
 
 ## 5. Parking Owner Guide
 
-Parking owners publish parking offers for spots assigned to them by an administrator.
+Users with an active parking spot assigned to them can publish parking offers. Parking-owner accounts always see the owner workflow; another account, including an administrator, sees **Offer my spot** when it owns an active spot.
 
 The app loads active parking spots assigned to your account. If you have one active spot, it is shown and selected automatically. If you have more than one, choose the spot from the list.
 
@@ -133,7 +133,7 @@ The owner screen focuses on your published parking offers. It does not show full
 
 ## 6. Administrator Guide
 
-Administrators manage setup data, review activity, perform controlled overrides, and export reports.
+Administrators manage setup data, review activity, perform controlled overrides, and export reports. Administrator privileges are additional capabilities: an administrator can also request parking, review personal requests and reservations, and offer an active spot assigned to that administrator.
 
 ### Manage Teams
 
@@ -171,7 +171,7 @@ Open **Requests** to review employee parking request activity.
 
 ![Admin requests](images/user_guide/admin-applications.png)
 
-Use this screen to inspect employees, spot context, parking windows, statuses, notes, and timestamps. Request and offer references remain visible for manual overrides and support.
+Use this screen to inspect employees, spot context, parking windows, statuses, notes, and timestamps. Names and emails are stacked in one person cell; request and offer references remain visible for manual overrides and support.
 
 ### Review Reservations
 
@@ -204,7 +204,7 @@ Open **Audit logs** to review assignment decisions and admin overrides.
 
 ![Admin audit logs](images/user_guide/admin-audit-logs.png)
 
-Audit logs are useful when checking why a reservation was created or changed.
+Open **Review decision details** on an entry to see the action, reason, actor, selected employee, previous reservation holder, ranking information, and requests that were not selected when those values were recorded. Names and emails are shown before technical references. The full recorded JSON remains available under the collapsed **Technical details** section for support and audit troubleshooting.
 
 ### Review Reports And Exports
 
@@ -276,7 +276,7 @@ Only administrators can access the Admin section. If you need administrator acce
 
 ### I Cannot Publish Availability
 
-Confirm that you are signed in as a parking owner and that your assigned active parking spot appears on **Offer my spot**. If no spot appears, ask an administrator to review the parking spot assignment and status.
+Confirm that an active parking spot is assigned to your account and appears on **Offer my spot**. If no spot appears, ask an administrator to review the parking spot assignment and status.
 
 ### I Cannot Apply For A Spot
 

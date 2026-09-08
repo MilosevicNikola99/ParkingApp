@@ -46,7 +46,7 @@
                 <strong class="data-table__primary">{{ getParkingSpotLabel(availability.parking_spot, availability.parking_spot_id) }}</strong>
                 <small class="data-table__reference">Offer #{{ availability.id }}</small>
               </td>
-              <td data-label="Offered by">{{ getUserLabel(availability.owner, availability.owner_id) }}</td>
+              <td data-label="Offered by"><PersonCell :fallback-id="availability.owner_id" :user="availability.owner" /></td>
               <td data-label="Starts"><DateTimeDisplay :value="availability.start_at" /></td>
               <td data-label="Ends"><DateTimeDisplay :value="availability.end_at" /></td>
               <td data-label="Team priority until"><DateTimeDisplay :value="availability.priority_until || ''" /></td>
@@ -77,13 +77,14 @@ import BaseButton from "@/components/common/BaseButton.vue";
 import DateTimeDisplay from "@/components/common/DateTimeDisplay.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import LoadingState from "@/components/common/LoadingState.vue";
+import PersonCell from "@/components/common/PersonCell.vue";
 import StatusBadge from "@/components/common/StatusBadge.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { getApiErrorMessage } from "@/services/apiErrors";
 import { applyForAvailability } from "@/services/applicationService";
 import { listOpenAvailabilities } from "@/services/availabilityService";
-import { getParkingSpotLabel, getUserLabel } from "@/utils/display";
+import { getParkingSpotLabel } from "@/utils/display";
 
 const { currentUser, handleLogout } = useAuthenticatedPage();
 const availabilities = ref([]);

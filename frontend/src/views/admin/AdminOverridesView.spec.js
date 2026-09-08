@@ -27,6 +27,8 @@ const reservation = {
   start_at: "2026-06-04T10:00:00Z",
   end_at: "2026-06-04T12:00:00Z",
   status: "active",
+  parking_spot: { id: 24, code: "A-24", location: "North garage" },
+  reserved_for_user: { id: 25, first_name: "Erin", last_name: "Employee", email: "erin@example.com" },
 };
 
 async function submitOverride(wrapper, mode, reason, options = {}) {
@@ -57,6 +59,9 @@ describe("AdminOverridesView", () => {
     expect(overrideService.manualOverrideAssignment).toHaveBeenCalledWith(22, 23, "Approved exception");
     expect(wrapper.text()).toContain("Reservation #21 created by manual override.");
     expect(wrapper.text()).toContain("Reservation #21");
+    expect(wrapper.text()).toContain("A-24 - North garage");
+    expect(wrapper.text()).toContain("Erin Employee");
+    expect(wrapper.text()).toContain("erin@example.com");
   });
 
   it("shows the returned reservation after a successful replacement override", async () => {

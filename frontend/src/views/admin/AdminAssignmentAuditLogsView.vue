@@ -67,48 +67,44 @@
       message="No assignment decisions match the selected filters."
       title="No audit logs"
     />
-    <section v-else class="workspace-section" aria-label="Assignment audit logs">
-      <div class="data-table-wrap">
-        <table class="data-table data-table--wide">
-          <thead>
-            <tr>
-              <th>Log ID</th>
-              <th>Availability ID</th>
-              <th>Reservation ID</th>
-              <th>Selected application ID</th>
-              <th>Selected user ID</th>
-              <th>Trigger</th>
-              <th>Ranking policy</th>
-              <th>Decision details</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="auditLog in auditLogs" :key="auditLog.id">
-              <td class="data-table__id" data-label="Log ID">#{{ auditLog.id }}</td><td data-label="Availability ID">#{{ auditLog.availability_id }}</td><td data-label="Reservation ID">#{{ auditLog.reservation_id }}</td><td data-label="Selected application ID">#{{ auditLog.selected_application_id }}</td><td data-label="Selected user ID">#{{ auditLog.selected_user_id }}</td><td data-label="Trigger"><StatusBadge :status="auditLog.trigger_source" /></td><td data-label="Ranking policy">{{ auditLog.ranking_policy }}</td><td class="data-table__decision" data-label="Decision details">
-                <JsonDetailsViewer
-                  :summary="`${auditLog.ranking_details.length} ranked requests`"
-                  :value="auditLog.ranking_details"
-                />
-                <JsonDetailsViewer
-                  :summary="`${auditLog.rejected_application_ids.length} requests not selected`"
-                  :value="auditLog.rejected_application_ids"
-                />
-              </td>
-              <td data-label="Created"><DateTimeDisplay :value="auditLog.created_at" /></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <section v-else class="audit-log-list" aria-label="Assignment audit logs">
+      <article v-for="auditLog in auditLogs" :key="auditLog.id" class="audit-log-card">
+        <header class="audit-log-card__header">
+          <div>
+            <p class="audit-log-card__reference">Audit log #{{ auditLog.id }}</p>
+            <h2>Reservation #{{ auditLog.reservation_id }}</h2>
+          </div>
+          <div class="audit-log-card__meta">
+            <StatusBadge :status="auditLog.trigger_source" />
+            <DateTimeDisplay :value="auditLog.created_at" />
+          </div>
+        </header>
+        <div class="audit-log-card__summary">
+          <div>
+            <span class="audit-log-card__label">Selected employee</span>
+            <PersonCell :fallback-id="auditLog.selected_user_id" show-reference :user="userById(auditLog.selected_user_id)" />
+          </div>
+          <div>
+            <span class="audit-log-card__label">Outcome references</span>
+            <strong>Offer #{{ auditLog.availability_id }}</strong>
+            <small>Request #{{ auditLog.selected_application_id }}</small>
+          </div>
+          <div>
+            <span class="audit-log-card__label">Ranking policy</span>
+            <strong>{{ auditLog.ranking_policy }}</strong>
+          </div>
+        </div>
+        <AuditDecisionDetails :audit-log="auditLog" :users-by-id="usersById" />
+      </article>
     </section>
   </AppLayout>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 
 import AdminPageHeader from "@/components/admin/AdminPageHeader.vue";
-import JsonDetailsViewer from "@/components/admin/JsonDetailsViewer.vue";
+import AuditDecisionDetails from "@/components/admin/AuditDecisionDetails.vue";
 import SelectField from "@/components/admin/SelectField.vue";
 import AlertMessage from "@/components/common/AlertMessage.vue";
 import BaseButton from "@/components/common/BaseButton.vue";
@@ -116,14 +112,17 @@ import BaseInput from "@/components/common/BaseInput.vue";
 import DateTimeDisplay from "@/components/common/DateTimeDisplay.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import LoadingState from "@/components/common/LoadingState.vue";
+import PersonCell from "@/components/common/PersonCell.vue";
 import StatusBadge from "@/components/common/StatusBadge.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { listAdminAssignmentAuditLogs } from "@/services/adminAssignmentAuditLogService";
+import { listAdminUsers } from "@/services/adminUserService";
 import { getApiErrorMessage } from "@/services/apiErrors";
 
 const { currentUser, handleLogout } = useAuthenticatedPage();
 const auditLogs = ref([]);
+const users = ref([]);
 const errorMessage = ref("");
 const isLoading = ref(true);
 const filters = reactive({
@@ -140,6 +139,11 @@ const triggerSourceOptions = [
   "scheduled",
   "admin_override",
 ].map((value) => ({ value, label: value.replaceAll("_", " ") }));
+const usersById = computed(() => Object.fromEntries(users.value.map((user) => [user.id, user])));
+
+function userById(userId) {
+  return usersById.value[userId] || null;
+}
 
 function filterParams() {
   const params = {};
@@ -155,7 +159,10 @@ async function loadAuditLogs() {
   errorMessage.value = "";
   isLoading.value = true;
   try {
-    auditLogs.value = await listAdminAssignmentAuditLogs(filterParams());
+    [auditLogs.value, users.value] = await Promise.all([
+      listAdminAssignmentAuditLogs(filterParams()),
+      listAdminUsers({ limit: 1000 }),
+    ]);
   } catch (error) {
     errorMessage.value = getApiErrorMessage(error, "Assignment audit logs could not be loaded.");
   } finally {

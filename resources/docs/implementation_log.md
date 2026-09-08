@@ -9547,3 +9547,76 @@ The frontend tests, production build, dependency audit, six-flow browser smoke, 
 ### Next Suggested Task
 
 Run the approved staging deployment rehearsal. Treat any failed acceptance item as the next deployment defect; do not add unrelated product functionality before staging evidence is recorded.
+
+## Capability-Based Navigation, Person Cells, And Audit Detail Polish
+
+### Task Name
+
+Improve frontend capability navigation, person identity presentation, and assignment audit-log details without changing backend behavior.
+
+### Root UX Problems
+
+- The frontend treated administrators as an admin-only audience even though existing authenticated self-service endpoints allow them to request parking, hold reservations, and publish offers for spots they own.
+- Several tables used fragile single-line identity formatting or exposed long names and emails without a reusable layout boundary.
+- Assignment decision details were raw-JSON-first and difficult to scan during normal operational review.
+
+### Capability And Navigation Decision
+
+- Kept the existing single `UserRole` model and all backend authorization unchanged.
+- All authenticated roles now receive **Available spots**, **My requests**, and **My reservations**.
+- Administrator privileges remain additive and the full Admin section remains present.
+- **Offer my spot** is visible to parking-owner accounts and to any other authenticated account whose owner-scoped active-spot lookup returns a record.
+- Added `useOwnedSpotCapability` to query `GET /parking-spots/mine` with a one-record limit. A failed capability lookup safely hides only the conditional owner link; backend ownership and active-status validation remain authoritative.
+
+### Person And Audit UI Changes
+
+- Added reusable `PersonCell` rendering full name, email, optional username, and optional user reference as separate stacked lines with deterministic fallbacks.
+- Applied it to available spots, admin users, parking spots, requests, reservations, report user previews, override reservation context, and audit decisions.
+- Replaced the audit-log wide raw-detail table with decision cards and added `AuditDecisionDetails` for ranking, not-selected requests, override/replacement context, reasons, actors, user context, and secondary IDs.
+- Retained the complete recorded payload under a collapsed **Technical details** JSON view, including irregular-payload fallback behavior.
+- Visual review found overly broad audit label styling and cramped three-column reservation summaries. The label selector was scoped, controlled identity wrapping was added, and reservation details were changed to two stable columns.
+
+### Files Changed
+
+- Frontend capability/navigation, dashboard, Help, display components, affected operational views, shared styles, and unit tests under `frontend/src`.
+- `frontend/e2e/mvp-smoke.spec.js` and `frontend/e2e/user-guide-screenshots.spec.js`.
+- All `16` screenshots under `resources/docs/images/user_guide`.
+- `resources/docs/user_guide.md`, `resources/docs/manual_qa_checklist.md`, `resources/docs/developer_handoff.md`, and this log.
+
+No backend, API schema, database model, migration, Compose, deployment, assignment, fairness, reservation, or override business behavior changed.
+
+### Review Notes
+
+- Confirmed normal parking routers depend on `get_current_user`; self-service queries and mutations remain scoped to the authenticated user.
+- Confirmed publishing validates current-user ownership and active spot state, and requesting still rejects an owner's own offer.
+- Confirmed `PersonCell` never exposes `hashed_password` and raw audit JSON continues to render through escaped Vue interpolation.
+- Corrected the email-only identity fallback so the address appears once instead of being duplicated as both primary and secondary text.
+- Confirmed unknown identity and irregular audit payload fallbacks remain readable and preserve technical evidence.
+- Fixed the one Playwright ambiguity caused by both **My requests** and **Requests** being present for admins by using the exact accessible link name.
+
+### Tests And Verification
+
+- Frontend unit tests: `22` files, `73` tests passed.
+- Frontend production build: passed; Vite transformed `134` modules.
+- Frontend dependency audit: `npm audit --omit=optional` passed with `0` vulnerabilities.
+- Disposable Chromium MVP smoke: `6` passed in `26.3s`; migrations reached `0010`, all role flows completed, structured audit details opened, and cleanup succeeded.
+- Disposable user-guide screenshot workflow: `4` passed in `23.7s`; migrations reached `0010 (head)`, `16` screenshots were regenerated, and cleanup succeeded.
+- Visual review passed for admin requests, reservations, audit logs, overrides, users, parking spots, employee available spots, and the `390x844` mobile override screen after the final wrapping fix.
+- Backend tests and standalone Alembic commands were not rerun because no backend or migration file changed. Both disposable browser workflows applied the complete migration chain through `0010 (head)` against PostgreSQL.
+
+### Known Limitations
+
+- The account schema still stores one role; the frontend derives only the active-owned-spot capability dynamically rather than introducing a multi-role permission model.
+- The conditional owner link is shown after its small owner-scoped API request resolves. A lookup failure does not grant access and leaves backend authorization unchanged.
+- Very long synthetic test identities wrap inside narrow table/card columns; normal-length addresses remain intact where width permits.
+- The unrelated untracked `.idea/vcs.xml` file was present before this task and was not modified or included in scope.
+
+### Completion Classification
+
+Status: READY.
+
+Admin self-service capabilities are exposed without weakening authorization, person identities are consistently readable, audit decisions are structured rather than JSON-first, technical details remain available, and all required frontend, browser, screenshot, and visual checks pass.
+
+### Next Suggested Task
+
+Run the approved staging deployment rehearsal and record environment-specific evidence. Treat any failed rehearsal acceptance item as the next defect before adding unrelated product functionality.

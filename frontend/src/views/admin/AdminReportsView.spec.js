@@ -8,8 +8,10 @@ const reportService = vi.hoisted(() => ({
   getSummaryReport: vi.fn(),
   getTopUsers: vi.fn(),
 }));
+const userService = vi.hoisted(() => ({ listAdminUsers: vi.fn() }));
 
 vi.mock("@/services/adminReportService", () => reportService);
+vi.mock("@/services/adminUserService", () => userService);
 vi.mock("@/composables/useAuthenticatedPage", () => ({
   useAuthenticatedPage: () => ({
     currentUser: ref({ id: 1, first_name: "Ada", last_name: "Admin", role: "admin" }),
@@ -49,6 +51,9 @@ describe("AdminReportsView", () => {
     reportService.getTopUsers.mockResolvedValue([{ user_id: 7, reservation_count: 3 }]);
     reportService.getParkingSpotUsage.mockResolvedValue([{ parking_spot_id: 9, reservation_count: 4 }]);
     reportService.downloadReportCsv.mockResolvedValue(undefined);
+    userService.listAdminUsers.mockResolvedValue([
+      { id: 7, first_name: "Erin", last_name: "Employee", email: "erin@example.com" },
+    ]);
   });
 
   it("renders summaries, rankings, audit triggers, and CSV export actions", async () => {
@@ -64,6 +69,8 @@ describe("AdminReportsView", () => {
     expect(wrapper.text()).toContain("Not selected");
     expect(wrapper.text()).not.toMatch(/\bPending\b|\bRejected\b/);
     expect(wrapper.text()).toContain("#7");
+    expect(wrapper.text()).toContain("Erin Employee");
+    expect(wrapper.text()).toContain("erin@example.com");
     expect(wrapper.text()).toContain("#9");
     expect(wrapper.text()).toContain("Scheduled");
     expect(wrapper.text()).toContain("Export reservations");
@@ -83,6 +90,7 @@ describe("AdminReportsView", () => {
     expect(reportService.getSummaryReport).toHaveBeenLastCalledWith(params);
     expect(reportService.getTopUsers).toHaveBeenLastCalledWith(params);
     expect(reportService.getParkingSpotUsage).toHaveBeenLastCalledWith(params);
+    expect(userService.listAdminUsers).toHaveBeenLastCalledWith({ limit: 1000 });
   });
 
   it("downloads CSV using the active filters", async () => {

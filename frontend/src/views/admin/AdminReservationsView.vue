@@ -13,7 +13,7 @@
     <EmptyState v-else-if="reservations.length === 0" title="No reservations" message="No records match the current filters." action-label="Clear filters or check again after assignments run." />
     <section v-else class="workspace-section" aria-label="Admin reservation history"><div class="data-table-wrap"><table class="data-table data-table--wide">
       <thead><tr><th>Reservation</th><th>Parking spot</th><th>Reserved for</th><th>Starts</th><th>Ends</th><th>Status</th><th>History state</th></tr></thead>
-      <tbody><tr v-for="reservation in reservations" :key="reservation.id"><td class="data-table__id" data-label="Reservation">#{{ reservation.id }}</td><td data-label="Parking spot">{{ getParkingSpotLabel(reservation.parking_spot, reservation.parking_spot_id) }}<small class="data-table__reference">Spot #{{ reservation.parking_spot_id }}</small></td><td data-label="Reserved for">{{ getUserLabel(reservation.reserved_for_user, reservation.reserved_for_user_id) }}<small class="data-table__reference">User #{{ reservation.reserved_for_user_id }}</small></td><td data-label="Starts"><DateTimeDisplay :value="reservation.start_at" /></td><td data-label="Ends"><DateTimeDisplay :value="reservation.end_at" /></td><td data-label="Status"><StatusBadge :status="reservation.status" /></td><td data-label="History state"><StatusBadge :status="reservation.history_state" /></td></tr></tbody>
+      <tbody><tr v-for="reservation in reservations" :key="reservation.id"><td class="data-table__id" data-label="Reservation">#{{ reservation.id }}</td><td data-label="Parking spot">{{ getParkingSpotLabel(reservation.parking_spot, reservation.parking_spot_id) }}<small class="data-table__reference">Spot #{{ reservation.parking_spot_id }}</small></td><td data-label="Reserved for"><PersonCell :fallback-id="reservation.reserved_for_user_id" show-reference :user="reservation.reserved_for_user" /></td><td data-label="Starts"><DateTimeDisplay :value="reservation.start_at" /></td><td data-label="Ends"><DateTimeDisplay :value="reservation.end_at" /></td><td data-label="Status"><StatusBadge :status="reservation.status" /></td><td data-label="History state"><StatusBadge :status="reservation.history_state" /></td></tr></tbody>
     </table></div></section>
   </AppLayout>
 </template>
@@ -28,12 +28,13 @@ import BaseInput from "@/components/common/BaseInput.vue";
 import DateTimeDisplay from "@/components/common/DateTimeDisplay.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import LoadingState from "@/components/common/LoadingState.vue";
+import PersonCell from "@/components/common/PersonCell.vue";
 import StatusBadge from "@/components/common/StatusBadge.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { listAdminReservationHistory } from "@/services/adminReservationService";
 import { getApiErrorMessage } from "@/services/apiErrors";
-import { getParkingSpotLabel, getStatusLabel, getUserLabel } from "@/utils/display";
+import { getParkingSpotLabel, getStatusLabel } from "@/utils/display";
 
 const { currentUser, handleLogout } = useAuthenticatedPage();
 const reservations = ref([]); const isLoading = ref(true); const errorMessage = ref("");

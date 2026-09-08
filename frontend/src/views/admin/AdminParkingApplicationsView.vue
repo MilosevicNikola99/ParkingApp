@@ -11,7 +11,7 @@
     <EmptyState v-else-if="applications.length === 0" title="No requests" message="No records match the current filters." action-label="Clear filters or check again after employees request parking." />
     <section v-else class="workspace-section" aria-label="Admin parking requests"><div class="data-table-wrap"><table class="data-table data-table--wide">
       <thead><tr><th>Request</th><th>Employee</th><th>Parking spot</th><th>Parking window</th><th>Status</th><th>Note</th><th>Created</th></tr></thead>
-      <tbody><tr v-for="application in applications" :key="application.id"><td class="data-table__id" data-label="Request">#{{ application.id }}<small class="data-table__reference">Offer #{{ application.availability_id }}</small></td><td data-label="Employee">{{ getUserLabel(application.applicant, application.applicant_id) }}</td><td data-label="Parking spot">{{ getParkingSpotLabel(application.availability?.parking_spot) }}</td><td data-label="Parking window"><DateTimeDisplay :value="application.availability?.start_at || ''" /><span class="data-table__range-separator">to</span><DateTimeDisplay :value="application.availability?.end_at || ''" /></td><td data-label="Status"><StatusBadge :status="application.status" /></td><td class="data-table__note" data-label="Note">{{ application.note || "-" }}</td><td data-label="Created"><DateTimeDisplay :value="application.created_at" /></td></tr></tbody>
+      <tbody><tr v-for="application in applications" :key="application.id"><td class="data-table__id" data-label="Request">#{{ application.id }}<small class="data-table__reference">Offer #{{ application.availability_id }}</small></td><td data-label="Employee"><PersonCell :fallback-id="application.applicant_id" :user="application.applicant" /></td><td data-label="Parking spot">{{ getParkingSpotLabel(application.availability?.parking_spot) }}</td><td data-label="Parking window"><DateTimeDisplay :value="application.availability?.start_at || ''" /><span class="data-table__range-separator">to</span><DateTimeDisplay :value="application.availability?.end_at || ''" /></td><td data-label="Status"><StatusBadge :status="application.status" /></td><td class="data-table__note" data-label="Note">{{ application.note || "-" }}</td><td data-label="Created"><DateTimeDisplay :value="application.created_at" /></td></tr></tbody>
     </table></div></section>
   </AppLayout>
 </template>
@@ -26,12 +26,13 @@ import BaseInput from "@/components/common/BaseInput.vue";
 import DateTimeDisplay from "@/components/common/DateTimeDisplay.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import LoadingState from "@/components/common/LoadingState.vue";
+import PersonCell from "@/components/common/PersonCell.vue";
 import StatusBadge from "@/components/common/StatusBadge.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { listAdminParkingApplications } from "@/services/adminParkingApplicationService";
 import { getApiErrorMessage } from "@/services/apiErrors";
-import { getParkingSpotLabel, getStatusLabel, getUserLabel } from "@/utils/display";
+import { getParkingSpotLabel, getStatusLabel } from "@/utils/display";
 
 const { currentUser, handleLogout } = useAuthenticatedPage();
 const applications = ref([]); const isLoading = ref(true); const errorMessage = ref("");

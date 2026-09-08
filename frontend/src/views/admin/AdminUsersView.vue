@@ -28,9 +28,9 @@
     <EmptyState v-else-if="users.length === 0" title="No users" message="Create the first user account." action-label="Use the form above to add an employee, owner, or administrator." />
     <section v-else class="workspace-section" aria-label="Admin users">
       <div class="data-table-wrap"><table class="data-table data-table--wide">
-        <thead><tr><th>User ID</th><th>User</th><th>Email</th><th>Role</th><th>Team</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th>User ID</th><th>User</th><th>Role</th><th>Team</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody><tr v-for="user in users" :key="user.id">
-          <td class="data-table__id" data-label="User ID">#{{ user.id }}</td><td data-label="User">{{ user.first_name }} {{ user.last_name }}<br><small>{{ user.username }}</small></td><td data-label="Email">{{ user.email }}</td><td data-label="Role"><StatusBadge :status="user.role" /></td><td data-label="Team">{{ teamName(user.team_id) }}</td><td data-label="Status"><StatusBadge :status="user.is_active ? 'active' : 'inactive'" /></td><td data-label="Actions"><div class="admin-row-actions">
+          <td class="data-table__id" data-label="User ID">#{{ user.id }}</td><td data-label="User"><PersonCell show-username :user="user" /></td><td data-label="Role"><StatusBadge :status="user.role" /></td><td data-label="Team">{{ teamName(user.team_id) }}</td><td data-label="Status"><StatusBadge :status="user.is_active ? 'active' : 'inactive'" /></td><td data-label="Actions"><div class="admin-row-actions">
             <BaseButton size="compact" variant="secondary" @click="editUser(user)">Edit</BaseButton>
             <ConfirmAction :loading="deletingIds.includes(user.id)" prompt="Delete this user?" @confirm="deleteUser(user)" />
           </div></td>
@@ -51,6 +51,7 @@ import BaseButton from "@/components/common/BaseButton.vue";
 import BaseInput from "@/components/common/BaseInput.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import LoadingState from "@/components/common/LoadingState.vue";
+import PersonCell from "@/components/common/PersonCell.vue";
 import StatusBadge from "@/components/common/StatusBadge.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";

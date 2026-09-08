@@ -24,6 +24,9 @@ describe("HelpView", () => {
     expect(wrapper.text()).toContain("Administrator");
     expect(wrapper.text()).toContain("Request parking");
     expect(wrapper.text()).toContain("Offer a parking spot");
-    expect(wrapper.text()).toContain("Manage operations");
+    expect(wrapper.text()).toContain("Manage and participate");
+    expect(wrapper.text()).toContain("Available spots, My requests, and My reservations");
+    expect(wrapper.text()).toContain("name and email");
+    expect(wrapper.text()).toContain("Technical details");
   });
 });

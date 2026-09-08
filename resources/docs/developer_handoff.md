@@ -30,20 +30,21 @@ Backend code is organized around separated FastAPI routers, services, repositori
 Frontend code follows a Vue/Vite structure.
 
 - `frontend/src/router`: route definitions and auth-aware navigation behavior, including the authenticated `/help` route.
-- `frontend/src/views`: login, dashboard, employee, parking owner, admin screens, and the static role-based Help page.
+- `frontend/src/views`: login, dashboard, self-service parking, owner, admin screens, and the authenticated Help page.
 - `frontend/src/services`: API client modules for backend communication.
-- `frontend/src/components`: reusable UI pieces. `AppLayout` owns the collapsible sidebar state through `localStorage` key `parking-app-sidebar-collapsed`.
+- `frontend/src/components`: reusable UI pieces. `PersonCell` provides the shared name/email/reference presentation, and `AuditDecisionDetails` provides readable audit payload summaries with raw JSON retained under a collapsed technical view. `AppLayout` owns the collapsible sidebar state through `localStorage` key `parking-app-sidebar-collapsed`.
+- `frontend/src/composables/useOwnedSpotCapability.js`: derives the offer-navigation capability from the authenticated role and the owner-scoped `GET /parking-spots/mine` response. Backend ownership checks remain authoritative.
 - `frontend/nginx.conf`: static serving and Vue Router history fallback for Docker Compose.
 
 ## Implemented Domain Workflows
 
-- Users and teams: admins can manage users and teams. Users have role-based access through `ADMIN`, `EMPLOYEE`, and `PARKING_OWNER`.
+- Users and teams: admins can manage users and teams. The persisted account model still has one of `ADMIN`, `EMPLOYEE`, or `PARKING_OWNER`; frontend self-service navigation is capability-based so admin privileges remain additive.
 - Authentication: login returns JWT bearer tokens; `/auth/me` returns the active current user; invalid, expired, inactive, or missing-user tokens return 401.
 - Authorization: reusable role dependencies return 403 for authenticated users without required roles.
 - Parking spots: admin-managed spot records with ownership support. Authenticated users can call GET /parking-spots/mine to retrieve only their own active spots; users without owned active spots receive an empty list.
-- Parking offers: parking owners can publish and cancel availability windows through **Offer my spot**. The owner UI auto-selects one owned active spot or offers an owner-scoped selector for multiple spots. Server-side ownership, active-status, and overlap rules remain authoritative.
-- Requests: employees can request open parking offers, view **My requests**, and cancel requests that are waiting for assignment. Duplicate and owner self-request cases are guarded.
-- Reservations: assignment creates reservations; employees can view and cancel their own active reservations.
+- Parking offers: a signed-in user with an active owned spot can publish and cancel availability windows through **Offer my spot**. Parking-owner accounts always receive the navigation entry; other roles receive it when the owner-scoped spot lookup finds an active spot. The UI auto-selects one owned active spot or offers an owner-scoped selector for multiple spots. Server-side ownership, active-status, and overlap rules remain authoritative.
+- Requests: signed-in users, including admins, can request open parking offers, view **My requests**, and cancel their own requests that are waiting for assignment. Duplicate and owner self-request cases are guarded.
+- Reservations: assignment creates reservations; signed-in users can view and cancel their own active reservations.
 - Assignment: due availability assignment uses service-layer transaction boundaries, candidate ranking, and audit logging.
 - Overrides: admins can manually assign, replace, and cancel reservations while preserving audit trail data. Replacement can use an existing pending `application_id` or an `applicant_id`; the applicant path is admin-only and creates or reactivates the replacement application internally.
 - Reports: admin report endpoints expose summary, top users, spot usage, audit activity, and CSV exports.
@@ -157,6 +158,8 @@ See `resources/docs/ci_pipeline.md` for local parity commands and troubleshootin
 - `scripts/generate_user_guide_screenshots.ps1 -ConfirmOverwrite` regenerates the guide screenshots from disposable local data and removes its isolated Docker resources by default.
 - Frontend terminology translates API/domain terms at the display boundary: applications are **requests**, availabilities are **parking offers**, and raw enum values use friendly status labels. Routes, payload fields, enum values, CSV identifiers, and database names remain unchanged.
 - Parking availability, application, and reservation read schemas include additive nested display summaries for spots and users. These are presentation context only; authorization continues to use authenticated IDs and service-layer ownership checks.
+- Admin navigation is additive: normal self-service links remain visible beside the Admin section, while **Offer my spot** is derived from role or active spot ownership. The capability lookup changes presentation only and cannot bypass backend authorization.
+- Person identities use the shared stacked `PersonCell`; operational IDs remain secondary. Assignment audit payloads render as structured decisions first, while the complete JSON stays collapsed under **Technical details**.
 
 ## Extension Points
 

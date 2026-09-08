@@ -31,12 +31,3 @@ export function getParkingSpotLabel(spot, fallbackId) {
   }
   return fallbackId ? `Parking spot #${fallbackId}` : "Parking spot";
 }
-
-export function getUserLabel(user, fallbackId) {
-  if (user) {
-    const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim();
-    if (fullName && user.email) return `${fullName} (${user.email})`;
-    return fullName || user.email || user.username;
-  }
-  return fallbackId ? `User #${fallbackId}` : "User";
-}

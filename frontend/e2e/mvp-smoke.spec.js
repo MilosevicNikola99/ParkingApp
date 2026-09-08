@@ -69,7 +69,12 @@ async function applyForRunAvailability(page) {
 test.describe.serial("MVP browser smoke", () => {
   test("admin creates disposable team, users, and owned parking spot", async ({ page }) => {
     await login(page, credentials.admin);
-    await expect(page.getByRole("navigation", { name: "Primary navigation" })).toContainText("Admin");
+    const adminNavigation = page.getByRole("navigation", { name: "Primary navigation" });
+    await expect(adminNavigation).toContainText("Admin");
+    await expect(adminNavigation).toContainText("Available spots");
+    await expect(adminNavigation).toContainText("My requests");
+    await expect(adminNavigation).toContainText("My reservations");
+    state.admin = await page.evaluate(() => JSON.parse(localStorage.getItem("parking_app_current_user")));
 
     await page.goto("/admin/teams");
     await page.getByLabel("Name").fill(names.team);
@@ -112,6 +117,13 @@ test.describe.serial("MVP browser smoke", () => {
     expect(spotResponse.status()).toBe(201);
     state.spot = await spotResponse.json();
     await expect(page.getByRole("alert")).toContainText('Parking spot "' + names.spot + '" saved.');
+
+    await page.getByLabel("Code").fill(`E2E-ADMIN-${runId}`);
+    await page.getByLabel("Location").fill("Admin garage");
+    await page.getByLabel("Owner").first().selectOption(String(state.admin.id));
+    const adminSpotResponsePromise = page.waitForResponse(responseFor("/admin/parking-spots", "POST"));
+    await page.getByRole("button", { name: "Create spot" }).click();
+    expect((await adminSpotResponsePromise).status()).toBe(201);
     await logout(page);
   });
 
@@ -219,6 +231,7 @@ test.describe.serial("MVP browser smoke", () => {
     await logout(page);
 
     await login(page, credentials.admin);
+    await expect(page.getByRole("navigation", { name: "Primary navigation" })).toContainText("Offer my spot");
     await page.goto("/admin/reservations");
     const historyRow = page.getByRole("row").filter({ hasText: `#${state.reservationId}` });
     await expect(historyRow).toContainText(`#${state.employeeB.id}`);
@@ -229,6 +242,10 @@ test.describe.serial("MVP browser smoke", () => {
     const auditSection = page.getByRole("region", { name: "Assignment audit logs" });
     await expect(auditSection).toContainText("Admin override");
     await expect(auditSection).toContainText(`#${state.employeeB.id}`);
+    await auditSection.getByText("Review decision details").first().click();
+    await expect(auditSection).toContainText("Replacement");
+    await expect(auditSection).toContainText(`E2E replacement ${runId}`);
+    await expect(auditSection).toContainText("Technical details");
 
     await page.goto("/admin/reports");
     await expect(page.getByRole("region", { name: "Operational report summaries" })).toBeVisible();
@@ -252,7 +269,7 @@ test.describe.serial("MVP browser smoke", () => {
     await page.goto("/admin/overrides");
     const navigation = page.getByRole("navigation", { name: "Primary navigation" });
     const activeOverrideLink = navigation.getByRole("link", { name: "Overrides" });
-    const requestsLink = navigation.getByRole("link", { name: "Requests" });
+    const requestsLink = navigation.getByRole("link", { name: "Requests", exact: true });
     const helpLink = navigation.getByRole("link", { name: "Help" });
     await expect(helpLink).toBeVisible();
     await helpLink.click();

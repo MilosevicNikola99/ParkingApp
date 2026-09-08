@@ -5,7 +5,7 @@
         <p class="page-toolbar__eyebrow">User guide</p>
         <h2>How to use ParkingApp</h2>
         <p class="page-toolbar__description">
-          Quick role-based guidance for requesting parking, offering a spot, and managing operations.
+          Quick guidance for requesting parking, offering an assigned spot, and managing operations.
         </p>
       </div>
     </div>
@@ -35,12 +35,14 @@
 
       <article class="help-card">
         <p class="help-card__eyebrow">Administrator</p>
-        <h2>Manage operations</h2>
+        <h2>Manage and participate</h2>
         <ol>
+          <li>Use Available spots, My requests, and My reservations for your own parking.</li>
+          <li>Use Offer my spot when an active parking spot is assigned to you.</li>
           <li>Create teams, users, and parking spots.</li>
           <li>Review requests and reservations.</li>
           <li>Use Overrides only when an assignment needs correction.</li>
-          <li>Use Audit logs and Reports to review activity.</li>
+          <li>Open readable Audit log decisions; expand Technical details only for support.</li>
         </ol>
       </article>
     </section>
@@ -64,6 +66,10 @@
           <p><strong>Active</strong> is currently assigned. Cancelled and completed records remain in history.</p>
         </div>
       </div>
+    </section>
+
+    <section class="context-help" aria-label="Identity and audit guidance">
+      <strong>People are shown by name and email.</strong> Technical user and request references remain available to administrators for support, overrides, and auditing.
     </section>
   </AppLayout>
 </template>

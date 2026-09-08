@@ -110,7 +110,7 @@
           <div v-else class="data-table-wrap">
             <table class="data-table report-table">
               <thead><tr><th>User</th><th>Reservations</th></tr></thead>
-              <tbody><tr v-for="user in topUsers" :key="user.user_id"><td class="data-table__id">#{{ user.user_id }}</td><td>{{ user.reservation_count }}</td></tr></tbody>
+              <tbody><tr v-for="user in topUsers" :key="user.user_id"><td><PersonCell :fallback-id="user.user_id" show-reference :user="userById(user.user_id)" /></td><td>{{ user.reservation_count }}</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -150,6 +150,7 @@ import BaseButton from "@/components/common/BaseButton.vue";
 import BaseInput from "@/components/common/BaseInput.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import LoadingState from "@/components/common/LoadingState.vue";
+import PersonCell from "@/components/common/PersonCell.vue";
 import StatusBadge from "@/components/common/StatusBadge.vue";
 import DashboardCard from "@/components/dashboard/DashboardCard.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
@@ -161,11 +162,13 @@ import {
   getSummaryReport,
   getTopUsers,
 } from "@/services/adminReportService";
+import { listAdminUsers } from "@/services/adminUserService";
 
 const { currentUser, handleLogout } = useAuthenticatedPage();
 const summary = ref(null);
 const topUsers = ref([]);
 const parkingSpotUsage = ref([]);
+const users = ref([]);
 const errorMessage = ref("");
 const isLoading = ref(true);
 const exportingReport = ref("");
@@ -191,6 +194,10 @@ function validateFilters() {
   return "";
 }
 
+function userById(userId) {
+  return users.value.find((user) => user.id === userId) || null;
+}
+
 async function loadReports() {
   errorMessage.value = validateFilters();
   if (errorMessage.value) return;
@@ -198,10 +205,11 @@ async function loadReports() {
   isLoading.value = true;
   try {
     const params = reportParams();
-    [summary.value, topUsers.value, parkingSpotUsage.value] = await Promise.all([
+    [summary.value, topUsers.value, parkingSpotUsage.value, users.value] = await Promise.all([
       getSummaryReport(params),
       getTopUsers(params),
       getParkingSpotUsage(params),
+      listAdminUsers({ limit: 1000 }),
     ]);
   } catch (error) {
     errorMessage.value = getApiErrorMessage(error, "Operational reports could not be loaded.");

@@ -25,7 +25,7 @@
     <EmptyState v-else-if="spots.length === 0" title="No parking spots" message="No records match the current filters." action-label="Clear filters or create a new parking spot above." />
     <section v-else class="workspace-section" aria-label="Admin parking spots"><div class="data-table-wrap"><table class="data-table data-table--wide">
       <thead><tr><th>Spot ID</th><th>Code</th><th>Location</th><th>Owner</th><th>Status</th><th>Description</th><th>Actions</th></tr></thead>
-      <tbody><tr v-for="spot in spots" :key="spot.id"><td class="data-table__id" data-label="Spot ID">#{{ spot.id }}</td><td data-label="Code">{{ spot.code }}</td><td data-label="Location">{{ spot.location || "-" }}</td><td data-label="Owner">{{ ownerName(spot.owner_id) }}</td><td data-label="Status"><StatusBadge :status="spot.is_active ? 'active' : 'inactive'" /></td><td class="data-table__note" data-label="Description">{{ spot.description || "-" }}</td><td data-label="Actions"><div class="admin-row-actions"><BaseButton size="compact" variant="secondary" @click="editSpot(spot)">Edit</BaseButton><ConfirmAction :loading="deletingIds.includes(spot.id)" prompt="Delete this parking spot?" @confirm="deleteSpot(spot)" /></div></td></tr></tbody>
+      <tbody><tr v-for="spot in spots" :key="spot.id"><td class="data-table__id" data-label="Spot ID">#{{ spot.id }}</td><td data-label="Code">{{ spot.code }}</td><td data-label="Location">{{ spot.location || "-" }}</td><td data-label="Owner"><PersonCell v-if="spot.owner_id" :fallback-id="spot.owner_id" :user="userById(spot.owner_id)" /><span v-else>-</span></td><td data-label="Status"><StatusBadge :status="spot.is_active ? 'active' : 'inactive'" /></td><td class="data-table__note" data-label="Description">{{ spot.description || "-" }}</td><td data-label="Actions"><div class="admin-row-actions"><BaseButton size="compact" variant="secondary" @click="editSpot(spot)">Edit</BaseButton><ConfirmAction :loading="deletingIds.includes(spot.id)" prompt="Delete this parking spot?" @confirm="deleteSpot(spot)" /></div></td></tr></tbody>
     </table></div></section>
   </AppLayout>
 </template>
@@ -41,6 +41,7 @@ import BaseInput from "@/components/common/BaseInput.vue";
 import BaseTextarea from "@/components/common/BaseTextarea.vue";
 import EmptyState from "@/components/common/EmptyState.vue";
 import LoadingState from "@/components/common/LoadingState.vue";
+import PersonCell from "@/components/common/PersonCell.vue";
 import StatusBadge from "@/components/common/StatusBadge.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";
@@ -56,7 +57,7 @@ const ownerOptions = computed(() => users.value.map((user) => ({ value: user.id,
 const form = reactive({ code: "", location: "", description: "", ownerId: "", isActive: "true" });
 const filters = reactive({ ownerId: "", isActive: "" });
 function resetForm() { editingId.value = null; Object.assign(form, { code: "", location: "", description: "", ownerId: "", isActive: "true" }); }
-function ownerName(ownerId) { const owner = users.value.find((user) => user.id === ownerId); return owner ? `${owner.first_name} ${owner.last_name}` : "-"; }
+function userById(userId) { return users.value.find((user) => user.id === userId) || null; }
 function editSpot(spot) { editingId.value = spot.id; Object.assign(form, { code: spot.code, location: spot.location || "", description: spot.description || "", ownerId: spot.owner_id ?? "", isActive: String(spot.is_active) }); }
 function payloadFromForm() { return { code: form.code.trim(), location: form.location.trim() || null, description: form.description.trim() || null, owner_id: form.ownerId === "" ? null : Number(form.ownerId), is_active: form.isActive === "true" }; }
 function filterParams() { const params = {}; if (filters.ownerId) params.owner_id = Number(filters.ownerId); if (filters.isActive) params.is_active = filters.isActive === "true"; return params; }

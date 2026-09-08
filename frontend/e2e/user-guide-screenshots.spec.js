@@ -88,6 +88,7 @@ test.describe.serial("user guide screenshots", () => {
     await capture(page, "login-page.png");
 
     await login(page, credentials.admin);
+    state.admin = await page.evaluate(() => JSON.parse(localStorage.getItem("parking_app_current_user")));
 
     await page.goto("/admin/teams");
     await page.getByLabel("Name").fill(names.team);
@@ -132,6 +133,13 @@ test.describe.serial("user guide screenshots", () => {
     expect(spotResponse.status()).toBe(201);
     state.spot = await spotResponse.json();
     await expect(page.getByRole("alert")).toContainText(`Parking spot "${names.spot}" saved.`);
+
+    await page.getByLabel("Code").fill(`QA-ADMIN-${runId}`);
+    await page.getByLabel("Location").fill("Admin garage");
+    await page.getByLabel("Owner").first().selectOption(String(state.admin.id));
+    const adminSpotResponsePromise = page.waitForResponse(responseFor("/admin/parking-spots", "POST"));
+    await page.getByRole("button", { name: "Create spot" }).click();
+    expect((await adminSpotResponsePromise).status()).toBe(201);
     await capture(page, "admin-parking-spots.png");
     await logout(page);
   });
@@ -222,6 +230,8 @@ test.describe.serial("user guide screenshots", () => {
     await page.getByLabel("Availability ID").fill(String(state.availability.id));
     await page.getByRole("button", { name: "Apply filters" }).click();
     await expect(page.getByRole("region", { name: "Assignment audit logs" })).toContainText("Admin override");
+    await page.getByText("Review decision details").first().click();
+    await expect(page.getByText("Technical details").first()).toBeVisible();
     await capture(page, "admin-audit-logs.png");
 
     await page.goto("/admin/reports");

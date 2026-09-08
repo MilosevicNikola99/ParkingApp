@@ -51,6 +51,10 @@ describe("AvailableSpotsView", () => {
     });
     await flushPromises();
 
+    expect(wrapper.get(".person-cell__name").text()).toBe("Olivia Owner");
+    expect(wrapper.get(".person-cell__email").text()).toBe("owner@example.com");
+    expect(wrapper.text()).not.toContain("Olivia Owner (owner@example.com)");
+
     const applyButton = wrapper.findAll("button").find((button) => button.text() === "Apply");
     await applyButton.trigger("click");
     await applyButton.trigger("click");

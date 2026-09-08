@@ -521,3 +521,26 @@ Reason: the Applicant ID replacement workflow passed through the actual browser 
 Status: PASSED.
 
 No release-candidate blocker was found in the focused naming, status-label, operational-table, or responsive screenshot regression.
+
+## Capability Navigation And Audit Detail Regression - 2026-08-20
+
+### Automated Browser Evidence
+
+- Disposable six-flow Chromium MVP smoke: `6` passed in `26.3s`; admin self-service navigation, owner publishing, employee requests/reservations, structured audit details, and the mobile override path passed.
+- Disposable user-guide screenshot workflow: `4` passed in `23.7s`; Alembic reached `0010 (head)`, all `16` expected screenshots were regenerated, and the isolated containers, network, and PostgreSQL volume were removed.
+
+### Focused QA Results
+
+- Employee navigation showed **Available spots**, **My requests**, and **My reservations** without the Admin section.
+- Parking-owner navigation showed the normal self-service links plus **Offer my spot**.
+- Administrator navigation showed the normal self-service links and the complete Admin section; an administrator assigned an active spot also saw **Offer my spot**.
+- Admin Requests, Reservations, Users, Parking spots, Reports, Overrides, and Audit logs displayed names and emails as stacked identity details instead of `Name (email)`.
+- Audit decision details showed replacement context and not-selected requests as structured content. **Technical details** remained available and collapsed by default.
+- Desktop screenshot review found and corrected identity overflow in audit cards and the reservation summary. Final screenshots had no overlapping person details.
+- The `390x844` Admin Overrides screenshot remained usable without page-level horizontal overflow or clipped controls.
+
+### Regression Result
+
+Status: PASSED.
+
+The capability navigation, readable identity cells, structured audit details, raw technical-detail access, and responsive layouts passed focused automated and visual QA.

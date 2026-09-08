@@ -1,6 +1,9 @@
-import { mount, RouterLinkStub } from "@vue/test-utils";
-import { beforeEach, describe, expect, it } from "vitest";
+import { flushPromises, mount, RouterLinkStub } from "@vue/test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMemoryHistory, createRouter } from "vue-router";
+
+const parkingSpotService = vi.hoisted(() => ({ listMyActiveParkingSpots: vi.fn() }));
+vi.mock("@/services/parkingSpotService", () => parkingSpotService);
 
 import AppLayout from "./AppLayout.vue";
 
@@ -14,18 +17,23 @@ function mountLayout(user) {
 describe("AppLayout navigation", () => {
   beforeEach(() => {
     localStorage.clear();
+    parkingSpotService.listMyActiveParkingSpots.mockResolvedValue([]);
   });
 
-  it("shows admin navigation only to admin users", () => {
-    const adminLayout = mountLayout({ first_name: "Ada", last_name: "Admin", role: "admin" });
-    const employeeLayout = mountLayout({ first_name: "Eli", last_name: "Employee", role: "employee" });
+  it("shows normal parking navigation to admins while keeping the Admin section exclusive", async () => {
+    const adminLayout = mountLayout({ id: 1, first_name: "Ada", last_name: "Admin", role: "admin" });
+    const employeeLayout = mountLayout({ id: 2, first_name: "Eli", last_name: "Employee", role: "employee" });
+    await flushPromises();
 
     expect(adminLayout.text()).toContain("Admin dashboard");
     expect(adminLayout.text()).toContain("Parking spots");
     expect(adminLayout.text()).toContain("Audit logs");
     expect(adminLayout.text()).toContain("Reports");
     expect(adminLayout.text()).toContain("Requests");
-    expect(adminLayout.text()).not.toContain("Available spots");
+    expect(adminLayout.text()).toContain("Available spots");
+    expect(adminLayout.text()).toContain("My requests");
+    expect(adminLayout.text()).toContain("My reservations");
+    expect(adminLayout.text()).not.toContain("Offer my spot");
     expect(employeeLayout.text()).not.toContain("Admin dashboard");
     expect(employeeLayout.text()).not.toContain("Audit logs");
     expect(employeeLayout.text()).not.toContain("Reports");
@@ -33,12 +41,25 @@ describe("AppLayout navigation", () => {
     expect(employeeLayout.text()).not.toContain("Offer my spot");
   });
 
-  it("shows parking owner tasks without employee request navigation", () => {
-    const wrapper = mountLayout({ first_name: "Olivia", last_name: "Owner", role: "parking_owner" });
+  it("shows normal and owner workflows to parking owners", async () => {
+    const wrapper = mountLayout({ id: 3, first_name: "Olivia", last_name: "Owner", role: "parking_owner" });
+    await flushPromises();
 
     expect(wrapper.text()).toContain("Offer my spot");
-    expect(wrapper.text()).not.toContain("Available spots");
-    expect(wrapper.text()).not.toContain("My requests");
+    expect(wrapper.text()).toContain("Available spots");
+    expect(wrapper.text()).toContain("My requests");
+    expect(wrapper.text()).toContain("My reservations");
+  });
+
+  it("shows Offer my spot to an admin or employee with an active owned spot", async () => {
+    parkingSpotService.listMyActiveParkingSpots.mockResolvedValue([{ id: 9, is_active: true }]);
+    const adminLayout = mountLayout({ id: 1, first_name: "Ada", last_name: "Admin", role: "admin" });
+    const employeeLayout = mountLayout({ id: 2, first_name: "Eli", last_name: "Employee", role: "employee" });
+    await flushPromises();
+
+    expect(adminLayout.text()).toContain("Offer my spot");
+    expect(employeeLayout.text()).toContain("Offer my spot");
+    expect(parkingSpotService.listMyActiveParkingSpots).toHaveBeenCalledWith({ limit: 1 });
   });
 
   it("shows the Help entry for authenticated users", () => {
