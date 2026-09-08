@@ -271,6 +271,10 @@ test.describe.serial("MVP browser smoke", () => {
     const activeOverrideLink = navigation.getByRole("link", { name: "Overrides" });
     const requestsLink = navigation.getByRole("link", { name: "Requests", exact: true });
     const helpLink = navigation.getByRole("link", { name: "Help" });
+    await page.getByRole("link", { name: "Skip to main content" }).focus();
+    await expect(page.getByRole("link", { name: "Skip to main content" })).toBeInViewport();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("main")).toBeFocused();
     await expect(helpLink).toBeVisible();
     await helpLink.click();
     await expect(page).toHaveURL(/\/help$/);
@@ -322,6 +326,23 @@ test.describe.serial("MVP browser smoke", () => {
     expect(compactAlignment).toBeLessThanOrEqual(1);
 
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/admin/overrides");
+    const menu = page.getByRole("button", { name: "Menu", exact: true });
+    await expect(menu).toHaveAttribute("aria-expanded", "false");
+    await expect(navigation).toBeHidden();
+    await expect(page.getByRole("heading", { name: "Reservation overrides", exact: true })).toBeInViewport();
+    await menu.click();
+    await expect(navigation).toBeVisible();
+    const mobileLink = navigation.getByRole("link", { name: "My reservations", exact: true });
+    expect(await mobileLink.evaluate((link) => link.scrollWidth <= link.clientWidth)).toBe(true);
+    await mobileLink.focus();
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeFocused();
+    await expect(navigation).toBeHidden();
+    await menu.click();
+    await mobileLink.click();
+    await expect(page).toHaveURL(/\/my-reservations$/);
+    await expect(navigation).toBeHidden();
     await page.goto("/admin/overrides");
     await expect(page.getByRole("button", { name: "Replace reservation" })).toBeVisible();
     const hasPageOverflow = await page.evaluate(

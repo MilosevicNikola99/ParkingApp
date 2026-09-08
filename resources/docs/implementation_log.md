@@ -9620,3 +9620,56 @@ Admin self-service capabilities are exposed without weakening authorization, per
 ### Next Suggested Task
 
 Run the approved staging deployment rehearsal and record environment-specific evidence. Treat any failed rehearsal acceptance item as the next defect before adding unrelated product functionality.
+
+## GPT-6 Frontend Review And Targeted Improvements - 2026-09-08
+
+### Scope And Review
+
+Reviewed AppLayout, shared CSS, all self-service and admin views, common/dashboard/admin components, router guards, frontend tests, the six-flow Playwright smoke suite, screenshot workflow, user guide and existing images, manual QA checklist, developer handoff, and prior implementation entries. The implementation plan was shared before editing. This pass preserves the blue/white identity and all assignment, reservation, ownership, authorization, API, database, deployment, and CI behavior.
+
+### UX Issues Found And Safe Fixes
+
+- Expanded mobile admin navigation occupied most of the initial screen. A persisted desktop collapse also retained 44px links on smaller screens. Added an independent Menu disclosure with explicit expanded state, close-on-selection, Escape focus restoration, and responsive width resets; retained desktop icon alignment and persistence.
+- Keyboard focus on light backgrounds was faint and there was no shortcut past navigation. Added contrasting focus outlines, a skip link, semantic dashboard group headings, and reduced-motion support.
+- The main dashboard mixed personal tasks, owner tasks, and administrative duties in one grid, while employee copy described admin access unnecessarily. Split capability-aware task groups, let cards use the available width, and separate Audit and Reporting in the admin dashboard.
+- Mobile table cells placed each child into a two-column grid, separating references and date ranges incorrectly and squeezing statuses/actions. Stack each label above its complete cell content, retain visually hidden native headers, add missing action labels, wrap statuses and row actions, and reduce the visual emphasis of technical ID columns without removing any IDs.
+- Offer form fixed minimum widths crowded intermediate screen sizes. Group the assigned spot, paired start/end controls, optional note, and actions with a local-time explanation.
+- Override API feedback appeared above both forms, far from mobile submission, and old success context could remain after a failed retry. Scope feedback to each submitting form, clear its previous result on a new submission, retain entered values, describe Offer # mapping and audit reasons, and link to reference lists in separate tabs. Existing reference inputs, reason validation, payloads, and business rules are unchanged.
+- Empty personal request/reservation lists lacked a direct next step. Add links to Available spots and My requests respectively.
+- The new tablet check exposed overflow in expanded audit details, including long ranking policy identifiers and fixed ranking columns. Allow wrapping and flexible ranking columns while keeping structured decisions and collapsed raw JSON intact. Visual inspection also corrected offscreen skip-link capture artifacts and prevented long employee names from squeezing mobile audit status badges.
+
+### Files Changed
+
+- Shell/styles: `frontend/src/layouts/AppLayout.vue`, its existing test, and `frontend/src/styles/main.css`.
+- Dashboard: `frontend/src/views/DashboardView.vue`, its existing test, `frontend/src/views/admin/AdminDashboardView.vue`, and `frontend/src/components/dashboard/DashboardCard.vue`.
+- Forms/feedback: `frontend/src/components/common/BaseInput.vue`, `BaseTextarea.vue`, `frontend/src/components/admin/AdminOverrideForm.vue`, its existing test, `ReservationSummaryCard.vue`, `frontend/src/views/admin/AdminOverridesView.vue`, and its existing test.
+- Self-service: `frontend/src/views/AvailableSpotsView.vue`, `MyAvailabilitiesView.vue`, `MyApplicationsView.vue`, `MyReservationsView.vue`, and the existing request/reservation tests.
+- Browser verification: `frontend/e2e/mvp-smoke.spec.js` and `frontend/e2e/user-guide-screenshots.spec.js`.
+- Documentation: this log, `resources/docs/user_guide.md`, `resources/docs/manual_qa_checklist.md`, `resources/docs/developer_handoff.md`, and the 16 existing user-guide PNGs. Corrected two stale backend directory references in the handoff during path review.
+
+### Verification And Screenshot Status
+
+- Frontend tests: 22 files, 79 tests passed. Added regression coverage for menu state, responsibility grouping, linked field guidance, local override feedback/stale results, and empty-state navigation. Existing capability navigation, owner publishing, person cells, friendly statuses, Help, and structured/raw audit tests remain passing.
+- Production build: passed locally and in the disposable frontend image (134 modules).
+- Full `npm audit`: passed, zero vulnerabilities; no dependency updates were needed.
+- Disposable Chromium MVP smoke: all 6 flows passed, including normal admin parking access, owner publication without raw spot ID, employee requests/assignment, replacement validation and submission, audit details, collapsed sidebar alignment, and mobile Menu/Escape/navigation/override validation.
+- The initial screenshot check correctly failed on tablet audit overflow; guide image replacement did not occur on failure. Final screenshot workflow: 4 tests passed (22.4s), 16 guide images regenerated, and 24 responsive review captures generated. All eight required pages passed page-overflow checks at 390x844, 768x844, and 1280x844, including expanded audit decisions with collapsed raw JSON. Visual review confirmed readable mobile cards, form controls, role tasks, and audit details.
+- Documentation checks passed: 18 local Markdown links (including all 16 guide images), balanced code fences, and git diff --check. Intended frontend/tests/docs changes are staged; no build output, browser traces, credentials, unrelated files, or untracked source files are included.
+- No backend file changed, so backend tests and standalone Alembic checks were not required. Disposable browser workflows applied the existing migration chain through `0010 (head)` and clean up their own containers and volumes.
+- Host Vite child-process execution and Docker engine access required approved execution outside the sandbox; these environment restrictions did not require repository configuration changes.
+
+### Follow-Up Work And Known Limitations
+
+- Searchable override selectors and a live preview of current/requested assignment context remain follow-up work. The current API workflows still use technical references, with Requests and Reservations providing human-readable discovery and post-submit reservation context.
+- Live dashboard counts, table sorting/pagination, and broader form standardization were deliberately deferred to keep this pass bounded.
+- Browser verification uses Chromium. A dedicated screen-reader and Safari/Firefox pass remains useful; semantic markup and keyboard checks are not a substitute for assistive-technology testing.
+- Wide tables continue to scroll within their container at tablet widths; mobile widths use stacked cards. Review captures are temporary artifacts under ignored `frontend/test-results/`; only guide images are intended documentation assets.
+- The unrelated untracked `.idea/vcs.xml` existed before this task and is excluded from staging.
+
+### Completion Classification
+
+Status: READY. Bounded improvements are implemented and verified. Frontend tests, production build, full dependency audit, six-flow browser smoke, responsive screenshot workflow, documentation checks, and staging review pass. Intended changes are staged; the pre-existing unrelated .idea/vcs.xml remains untracked.
+
+### Next Recommended Task
+
+Run the existing staging deployment rehearsal as a separate task and record environment-specific acceptance evidence. Keep searchable override discovery as a bounded frontend follow-up if operator feedback prioritizes it. No deployment or image publication was performed in this review.

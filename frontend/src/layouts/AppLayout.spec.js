@@ -113,4 +113,19 @@ describe("AppLayout navigation", () => {
     expect(wrapper.classes()).toContain("app-shell--collapsed");
     expect(wrapper.get('button[aria-label="Expand sidebar navigation"]').exists()).toBe(true);
   });
+
+  it("opens mobile navigation independently of desktop collapse and closes it with Escape", async () => {
+    localStorage.setItem("parking-app-sidebar-collapsed", "true");
+    const wrapper = mountLayout({ id: 1, role: "admin" });
+    const toggle = wrapper.get('button[aria-controls="primary-navigation"]');
+    expect(toggle.attributes("aria-expanded")).toBe("false");
+    await toggle.trigger("click");
+    expect(toggle.attributes("aria-expanded")).toBe("true");
+    expect(wrapper.get("nav").classes()).toContain("app-shell__nav--open");
+    await wrapper.get("aside").trigger("keydown", { key: "Escape" });
+    expect(toggle.attributes("aria-expanded")).toBe("false");
+    expect(localStorage.getItem("parking-app-sidebar-collapsed")).toBe("true");
+    expect(wrapper.get('.skip-link').attributes('href')).toBe('#main-content');
+    expect(wrapper.get('main').attributes('tabindex')).toBe('-1');
+  });
 });

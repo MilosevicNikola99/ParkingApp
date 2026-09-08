@@ -1,4 +1,4 @@
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, RouterLinkStub } from "@vue/test-utils";
 import { ref } from "vue";
 import { describe, expect, it, vi } from "vitest";
 
@@ -48,10 +48,26 @@ async function submitOverride(wrapper, mode, reason, options = {}) {
 }
 
 describe("AdminOverridesView", () => {
+  it("keeps a replacement error beside its form and removes stale result context on retry", async () => {
+    overrideService.replaceReservationAssignment.mockResolvedValueOnce(reservation);
+    const wrapper = mount(AdminOverridesView, {
+      global: { stubs: { AppLayout: AppLayoutStub, RouterLink: RouterLinkStub } },
+    });
+    await submitOverride(wrapper, "replacement", "First correction");
+    expect(wrapper.find('[aria-label="Reservation summary"]').exists()).toBe(true);
+
+    overrideService.replaceReservationAssignment.mockRejectedValueOnce(new Error("Unavailable"));
+    await submitOverride(wrapper, "replacement", "Retry correction");
+    expect(wrapper.find('[aria-label="Reservation summary"]').exists()).toBe(false);
+    expect(wrapper.get('[aria-labelledby="replacement-override-title"]').text()).toContain("could not be completed");
+    expect(wrapper.get('[aria-labelledby="manual-override-title"]').text()).not.toContain("could not be completed");
+    expect(wrapper.text()).not.toContain("replaced successfully");
+    expect(wrapper.get('textarea[name="replacement-reason"]').element.value).toBe("Retry correction");
+  });
   it("shows the returned reservation after a successful manual override", async () => {
     overrideService.manualOverrideAssignment.mockResolvedValue(reservation);
     const wrapper = mount(AdminOverridesView, {
-      global: { stubs: { AppLayout: AppLayoutStub } },
+      global: { stubs: { AppLayout: AppLayoutStub, RouterLink: RouterLinkStub } },
     });
 
     await submitOverride(wrapper, "manual", "Approved exception");
@@ -67,7 +83,7 @@ describe("AdminOverridesView", () => {
   it("shows the returned reservation after a successful replacement override", async () => {
     overrideService.replaceReservationAssignment.mockResolvedValue(reservation);
     const wrapper = mount(AdminOverridesView, {
-      global: { stubs: { AppLayout: AppLayoutStub } },
+      global: { stubs: { AppLayout: AppLayoutStub, RouterLink: RouterLinkStub } },
     });
 
     await submitOverride(wrapper, "replacement", "Replace active assignment");
@@ -84,7 +100,7 @@ describe("AdminOverridesView", () => {
   it("submits replacement override by applicant ID", async () => {
     overrideService.replaceReservationAssignment.mockResolvedValue(reservation);
     const wrapper = mount(AdminOverridesView, {
-      global: { stubs: { AppLayout: AppLayoutStub } },
+      global: { stubs: { AppLayout: AppLayoutStub, RouterLink: RouterLinkStub } },
     });
 
     await submitOverride(wrapper, "replacement", "Replace by applicant", {

@@ -21,7 +21,7 @@
     <LoadingState v-if="isLoading" />
     <EmptyState
       v-else-if="availabilities.length === 0"
-      action-label="Check again later or ask a parking owner to publish availability."
+      action-label="Check again later or ask a parking owner to publish an offer."
       message="No parking spots are available right now."
       title="No open spots"
     />

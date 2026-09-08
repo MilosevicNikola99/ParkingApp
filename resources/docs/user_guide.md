@@ -50,6 +50,10 @@ Administrators also see the Admin section:
 
 The Dashboard gives quick links into the areas available to your account. Administrator access adds management tools; it does not remove normal parking workflows. Use **Help** for quick workflow steps. On desktop, the sidebar can be collapsed or expanded; the application remembers your choice on the same browser.
 
+Dashboard tasks are grouped into **Your parking**, **Your parking offers** when available, and **Administration** for admins. The Admin dashboard separates setup, operations, audit, and reporting.
+
+On phones and tablets, choose **Menu** to open navigation and **Close menu** to close it. Choosing a page also closes the menu. Keyboard users can press Escape inside the menu to close it, or use **Skip to main content** at the start of the page. Help and Sign out remain in the page header.
+
 ![Employee dashboard](images/user_guide/employee-dashboard.png)
 
 Use **Sign out** when you finish using the application, especially on a shared computer.
@@ -193,6 +197,8 @@ First find the relevant references in **Requests** and **Reservations**. For rep
 - Employee ID
 
 Use only one of those fields for a replacement. If the reason is missing, the application shows `Reason is required.`
+
+The Requests and Reservations links inside each override form open in a new tab, preserving your entries. **Availability ID** is the **Offer #** reference shown in Requests. Errors and success messages appear beside the submit button for the action you used; a successful action also displays its returned reservation below the form.
 
 The mobile layout keeps the same controls available on a narrow screen.
 

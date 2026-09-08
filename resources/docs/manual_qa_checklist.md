@@ -92,6 +92,12 @@ If Docker reports named-pipe access errors, run from a Windows account with Dock
 - [ ] Refreshing `/admin` returns the Vue application, not an nginx 404.
 - [ ] Sidebar collapse and expand works on desktop and remains clear for keyboard users.
 - [ ] Sidebar collapsed state persists after page reload in the same browser.
+- [ ] At 390x844 and tablet width, Menu opens readable navigation even after collapsing the desktop sidebar; Escape closes it and restores focus to Menu.
+- [ ] Selecting a mobile navigation link closes the menu; Help and Sign out remain visible in the header.
+- [ ] Keyboard focus is clear, Skip to main content works, and reduced-motion preferences disable transitions.
+- [ ] Dashboard separates personal parking, owner offers, and administration; the Admin dashboard has separate Audit and Reporting sections.
+- [ ] Mobile table cards keep parking windows, secondary references, and actions together without clipping long names or statuses.
+- [ ] Override errors appear in the form that submitted them, entered values survive errors, and a failed retry does not leave a stale success summary.
 - [ ] Help page is available after login and shows Employee, Parking owner, and Administrator guidance.
 - [ ] Main workflows fit at desktop width without overlapping controls.
 - [ ] Main workflows fit at mobile width without clipped buttons or overlapping text.
@@ -544,3 +550,12 @@ No release-candidate blocker was found in the focused naming, status-label, oper
 Status: PASSED.
 
 The capability navigation, readable identity cells, structured audit details, raw technical-detail access, and responsive layouts passed focused automated and visual QA.
+
+## Frontend Review Regression - 2026-09-08
+
+- Frontend tests: 22 files / 79 tests passed; production build and full npm audit passed (zero vulnerabilities).
+- Six disposable Chromium MVP flows passed, including desktop expanded/collapsed alignment, capability-based admin parking navigation, owner publishing without raw spot ID, employee requests, replacement submission, structured audit details, and mobile override validation.
+- Keyboard checks cover the skip link moving focus to main content and Escape restoring focus to Menu. Mobile navigation opens after a persisted desktop collapse and closes on page selection.
+- The screenshot workflow checks Dashboard, Available spots, My requests, Offer my spot, Admin Requests, Admin Reservations, Admin Audit Logs, and Admin Overrides at 390x844, 768x844, and 1280x844. Expanded ranking/replacement audit details are included, with raw JSON still collapsed.
+- Tablet audit overflow was detected and corrected before completion. Mobile table-card grouping, long identity wrapping, offer-form grouping, and local override feedback were visually reviewed.
+- No backend, database, authorization, assignment, reservation, deployment, or hosted CI behavior changed. Chromium is the verified browser; dedicated assistive-technology and other-browser checks remain follow-up work.

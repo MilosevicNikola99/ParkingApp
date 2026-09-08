@@ -17,6 +17,7 @@ vi.mock("@/composables/useAuthenticatedPage", () => ({
 }));
 
 import DashboardView from "./DashboardView.vue";
+import AdminDashboardView from "./admin/AdminDashboardView.vue";
 
 const stubs = {
   AppLayout: { template: "<div><slot /></div>" },
@@ -24,6 +25,12 @@ const stubs = {
 };
 
 describe("DashboardView", () => {
+  it("separates setup, operations, audit, and reporting with semantic headings", () => {
+    const wrapper = mount(AdminDashboardView, { global: { stubs } });
+    expect(wrapper.findAll("h2").map((heading) => heading.text())).toEqual([
+      "Manage parking operations", "People and teams", "Parking spots", "Operations", "Audit", "Reporting",
+    ]);
+  });
   beforeEach(() => {
     userId += 1;
     parkingSpotService.listMyActiveParkingSpots.mockResolvedValue([]);
@@ -49,5 +56,8 @@ describe("DashboardView", () => {
 
     expect(wrapper.text()).toContain("Offer your parking spot");
     expect(wrapper.text()).toContain("Review published offers");
+    expect(wrapper.get('[aria-labelledby="dashboard-parking"]').text()).not.toContain("People and parking");
+    expect(wrapper.get('[aria-labelledby="dashboard-offers"]').text()).toContain("Review published offers");
+    expect(wrapper.get('[aria-labelledby="dashboard-admin"]').text()).toContain("People and parking");
   });
 });

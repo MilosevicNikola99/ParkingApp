@@ -1,9 +1,11 @@
 <template>
   <label class="base-input">
-    <span class="base-input__label">{{ label }}</span>
+    <span :id="`${name}-label`" class="base-input__label">{{ label }}</span>
     <input
       class="base-input__control"
       :autocomplete="autocomplete"
+      :aria-describedby="hint ? `${name}-hint` : undefined"
+      :aria-labelledby="`${name}-label`"
       :min="min"
       :name="name"
       :placeholder="placeholder"
@@ -13,11 +15,13 @@
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
     />
+    <span v-if="hint" :id="`${name}-hint`" class="form-helper">{{ hint }}</span>
   </label>
 </template>
 
 <script setup>
 defineProps({
+  hint: { type: String, default: "" },
   modelValue: {
     type: String,
     default: "",

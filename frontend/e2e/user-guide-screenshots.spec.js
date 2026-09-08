@@ -49,10 +49,35 @@ function responseFor(pathname, method) {
 }
 
 async function capture(page, fileName, options = {}) {
+  await page.mouse.move(0, 0);
   await page.screenshot({
     path: path.join(screenshotDir, fileName),
     fullPage: options.fullPage ?? true,
   });
+}
+
+async function reviewResponsivePages(page, routes, testInfo) {
+  const originalViewport = page.viewportSize();
+  for (const width of [390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const route of routes) {
+      await page.goto(route);
+      await expect(page.locator(".loading-state")).toHaveCount(0);
+      await expect(page.locator("main h2").first()).toBeVisible();
+      if (route === "/admin/audit-logs") {
+        for (const summary of await page.getByText("Review decision details").all()) {
+          await summary.click();
+        }
+        for (const details of await page.locator(".json-details").all()) {
+          await expect(details).not.toHaveAttribute("open", "");
+        }
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), `${route} at ${width}px`).toBe(true);
+      await page.mouse.move(0, 0);
+      await page.screenshot({ path: testInfo.outputPath(`review-${route.replaceAll("/", "-")}-${width}.png`), fullPage: true });
+    }
+  }
+  await page.setViewportSize(originalViewport);
 }
 
 async function createUser(page, { username, firstName, role, teamId }) {
@@ -144,7 +169,7 @@ test.describe.serial("user guide screenshots", () => {
     await logout(page);
   });
 
-  test("capture owner availability screens", async ({ page }) => {
+  test("capture owner availability screens", async ({ page }, testInfo) => {
     await login(page, credentials.owner);
     await page.goto("/my-availabilities");
 
@@ -169,10 +194,11 @@ test.describe.serial("user guide screenshots", () => {
     state.availability = await response.json();
     await expect(page.getByRole("row").filter({ hasText: names.availabilityNote })).toBeVisible();
     await capture(page, "owner-availability-list.png");
+    await reviewResponsivePages(page, ["/my-availabilities"], testInfo);
     await logout(page);
   });
 
-  test("capture employee application and reservation screens", async ({ page }) => {
+  test("capture employee application and reservation screens", async ({ page }, testInfo) => {
     await login(page, credentials.employeeA);
     await page.goto("/dashboard");
     await capture(page, "employee-dashboard.png");
@@ -185,6 +211,7 @@ test.describe.serial("user guide screenshots", () => {
     await page.goto("/my-applications");
     await expect(page.getByRole("row").filter({ hasText: `Request #${state.applicationA.id}` })).toContainText("Waiting for assignment");
     await capture(page, "employee-applications.png");
+    await reviewResponsivePages(page, ["/dashboard", "/availabilities", "/my-applications"], testInfo);
     await logout(page);
 
     await login(page, credentials.employeeB);
@@ -202,7 +229,7 @@ test.describe.serial("user guide screenshots", () => {
     await logout(page);
   });
 
-  test("capture admin operational screens and mobile override layout", async ({ page }) => {
+  test("capture admin operational screens and mobile override layout", async ({ page }, testInfo) => {
     await login(page, credentials.admin);
 
     await page.goto("/admin/parking-applications");
@@ -242,5 +269,6 @@ test.describe.serial("user guide screenshots", () => {
     await page.goto("/admin/overrides");
     await expect(page.getByRole("button", { name: "Replace reservation" })).toBeVisible();
     await capture(page, "mobile-admin-overrides.png");
+    await reviewResponsivePages(page, ["/admin/parking-applications", "/admin/reservations", "/admin/audit-logs", "/admin/overrides"], testInfo);
   });
 });

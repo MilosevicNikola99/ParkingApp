@@ -4,19 +4,25 @@
       <div>
         <p class="dashboard-hero__eyebrow">Today</p>
         <h2>{{ greeting }}</h2>
-        <p class="dashboard-hero__description">Choose the parking workflow you need. Administrative access adds tools without replacing your personal parking tasks.</p>
+        <p class="dashboard-hero__description">Find a spot, track your requests, and check your assigned parking.</p>
       </div>
       <span class="dashboard-hero__status">{{ roleLabel }}</span>
     </section>
 
     <AlertMessage v-if="errorMessage" :message="errorMessage" />
 
-    <section class="dashboard-grid dashboard-grid--focused" :aria-label="`${roleLabel} dashboard tasks`">
-      <DashboardCard
-        v-for="card in dashboardCards"
-        :key="`${card.to}-${card.title}`"
-        v-bind="card"
-      />
+    <section v-for="group in dashboardGroups" :key="group.id" class="dashboard-task-group" :aria-labelledby="`dashboard-${group.id}`">
+      <div class="dashboard-group__header">
+        <h2 :id="`dashboard-${group.id}`">{{ group.title }}</h2>
+      </div>
+      <div class="dashboard-grid dashboard-grid--focused">
+        <DashboardCard
+          v-for="card in group.cards"
+          :key="`${card.to}-${card.title}`"
+          heading-tag="h3"
+          v-bind="card"
+        />
+      </div>
     </section>
   </AppLayout>
 </template>
@@ -42,15 +48,16 @@ const greeting = computed(() => {
 
 const roleLabel = computed(() => currentUser.value?.role?.replace("_", " ") || "Authenticated");
 
-const dashboardCards = computed(() => {
+const dashboardGroups = computed(() => {
   const cards = [
     { label: "Find open parking windows and request the time you need.", metric: "Browse", status: "Parking", title: "Browse available spots", to: "/availabilities" },
     { label: "Track requests that are waiting, selected, cancelled, or not selected.", metric: "Review", status: "Requests", title: "Review my requests", to: "/my-applications" },
     { label: "See assigned parking and cancel when you no longer need it.", metric: "Review", status: "Reservations", title: "Review reservations", to: "/my-reservations" },
   ];
+  const groups = [{ id: "parking", title: "Your parking", cards }];
 
   if (canOfferSpot.value) {
-    cards.push(
+    groups.push({ id: "offers", title: "Your parking offers", cards: [
       {
         label: "Choose one of your assigned spots and tell employees when it is free.",
         metric: "Publish",
@@ -65,18 +72,18 @@ const dashboardCards = computed(() => {
         title: "Review published offers",
         to: "/my-availabilities",
       },
-    );
+    ] });
   }
 
   if (currentUser.value?.role === "admin") {
-    cards.push(
+    groups.push({ id: "admin", title: "Administration", cards: [
       { label: "Manage teams, users, and assigned parking spots.", metric: "Setup", status: "Administration", title: "People and parking", to: "/admin" },
       { label: "Review employee requests, reservations, and corrections.", metric: "Operate", status: "Daily work", title: "Parking operations", to: "/admin/parking-applications" },
       { label: "Trace assignment decisions and administrator actions.", metric: "Audit", status: "Governance", title: "Audit activity", to: "/admin/audit-logs" },
       { label: "Review operational summaries and export supporting data.", metric: "Report", status: "Insights", title: "Reports", to: "/admin/reports" },
-    );
+    ] });
   }
 
-  return cards;
+  return groups;
 });
 </script>

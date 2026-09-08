@@ -7,17 +7,18 @@
     </div>
 
     <div class="field-guide" aria-label="Override field guide">
-      <p><strong>Find references first:</strong> open Requests for the request and offer references, then Reservations for the current assignment.</p>
+      <p><strong>Find references first:</strong> open <RouterLink class="inline-link" to="/admin/parking-applications" target="_blank" rel="noopener">Requests</RouterLink> for the request and offer references, then <RouterLink class="inline-link" to="/admin/reservations" target="_blank" rel="noopener">Reservations</RouterLink> for the current assignment. Links open in a new tab so your entries stay here.</p>
       <p v-if="isReplacementMode"><strong>Request ID</strong> uses an existing request. <strong>Employee ID</strong> is for an employee who should replace the current holder when no waiting request exists.</p>
       <p v-else><strong>Request ID</strong> identifies the waiting request to assign.</p>
       <p><strong>Reason</strong> is required and appears in audit history.</p>
     </div>
 
-    <form class="admin-form technical-id-form" @submit.prevent="submitForm">
+    <form class="admin-form technical-id-form" :aria-busy="loading" @submit.prevent="submitForm">
       <p class="technical-id-form__heading">Technical identifiers</p>
       <BaseInput
         v-model="form.availabilityId"
         label="Availability ID"
+        hint="Use the Offer # reference from Requests."
         min="1"
         :name="`${mode}-availability-id`"
         required
@@ -48,10 +49,12 @@
       <BaseTextarea
         v-model="form.reason"
         label="Reason"
+        hint="Required. Explain why this assignment needs an exception; this is saved in audit history."
         :name="`${mode}-reason`"
         placeholder="Required audit reason"
       />
       <AlertMessage :message="validationError" />
+      <slot name="feedback" />
       <div class="form-actions">
         <BaseButton :loading="loading" type="submit">{{ submitLabel }}</BaseButton>
       </div>
@@ -61,6 +64,7 @@
 
 <script setup>
 import { computed, reactive, ref } from "vue";
+import { RouterLink } from "vue-router";
 
 import AlertMessage from "@/components/common/AlertMessage.vue";
 import BaseButton from "@/components/common/BaseButton.vue";

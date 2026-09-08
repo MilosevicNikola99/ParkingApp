@@ -50,6 +50,7 @@
           <BaseInput v-model="form.startAt" label="Start" name="availability-start" required type="datetime-local" />
           <BaseInput v-model="form.endAt" label="End" name="availability-end" required type="datetime-local" />
           <BaseTextarea v-model="form.note" label="Note" name="availability-note" placeholder="Optional" />
+          <p class="form-helper">Start and End use your browser's local time. Note is optional.</p>
           <AlertMessage :message="formError" />
           <div class="form-actions">
             <BaseButton :disabled="publishDisabled" :loading="isPublishing" type="submit">Publish offer</BaseButton>

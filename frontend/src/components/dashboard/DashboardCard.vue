@@ -1,7 +1,7 @@
 <template>
   <component :is="componentType" class="dashboard-card" :to="to || undefined">
     <div class="dashboard-card__header">
-      <h2>{{ title }}</h2>
+      <component :is="headingTag">{{ title }}</component>
       <span v-if="status" class="dashboard-card__status">{{ status }}</span>
     </div>
     <p class="dashboard-card__metric">{{ metric }}</p>
@@ -14,6 +14,11 @@ import { computed } from "vue";
 import { RouterLink } from "vue-router";
 
 const props = defineProps({
+  headingTag: {
+    type: String,
+    default: "h2",
+    validator: (value) => ["h2", "h3"].includes(value),
+  },
   title: {
     type: String,
     required: true,

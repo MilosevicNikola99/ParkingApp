@@ -19,6 +19,8 @@
       v-else-if="applications.length === 0"
       message="Requests submitted for available parking spots will appear here."
       title="No parking requests"
+      action-label="Browse available spots"
+      action-to="/availabilities"
     />
     <section v-else class="workspace-section" aria-label="My parking requests">
       <div class="data-table-wrap">
@@ -47,7 +49,7 @@
               <td data-label="Status"><StatusBadge :status="application.status" /></td>
               <td class="data-table__note" data-label="Note">{{ application.note || "-" }}</td>
               <td data-label="Created"><DateTimeDisplay :value="application.created_at" /></td>
-              <td>
+              <td data-label="Action">
                 <BaseButton
                   :disabled="application.status !== 'pending'"
                   :loading="cancellingIds.includes(application.id)"

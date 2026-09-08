@@ -19,6 +19,8 @@
       v-else-if="reservations.length === 0"
       message="Assigned parking reservations will appear here."
       title="No parking reservations"
+      action-label="Review my requests"
+      action-to="/my-applications"
     />
     <section v-else class="workspace-section" aria-label="My parking reservations">
       <div class="data-table-wrap">
@@ -52,7 +54,7 @@
                   type="text"
                 />
               </td>
-              <td>
+              <td data-label="Action">
                 <BaseButton
                   :disabled="reservation.status !== 'active'"
                   :loading="cancellingIds.includes(reservation.id)"

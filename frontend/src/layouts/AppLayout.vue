@@ -1,6 +1,7 @@
 <template>
   <div class="app-shell" :class="{ 'app-shell--collapsed': isCollapsed }">
-    <aside class="app-shell__sidebar">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <aside class="app-shell__sidebar" @keydown.esc="closeMobileMenu">
       <div class="app-shell__brand-row">
         <RouterLink class="app-shell__brand" to="/dashboard" :aria-label="isCollapsed ? 'Parking dashboard' : undefined">
           <span class="app-shell__brand-mark" aria-hidden="true">P</span>
@@ -15,8 +16,16 @@
         >
           <span aria-hidden="true">{{ isCollapsed ? ">" : "<" }}</span>
         </button>
+        <button
+          ref="mobileMenuButton"
+          class="app-shell__menu-toggle"
+          type="button"
+          aria-controls="primary-navigation"
+          :aria-expanded="isMobileMenuOpen"
+          @click="isMobileMenuOpen = !isMobileMenuOpen"
+        >{{ isMobileMenuOpen ? "Close menu" : "Menu" }}</button>
       </div>
-      <nav class="app-shell__nav" aria-label="Primary navigation">
+      <nav id="primary-navigation" class="app-shell__nav" :class="{ 'app-shell__nav--open': isMobileMenuOpen }" aria-label="Primary navigation">
         <RouterLink
           v-for="item in primaryNavItems"
           :key="item.to"
@@ -24,6 +33,7 @@
           :aria-label="isCollapsed ? item.label : undefined"
           :title="isCollapsed ? item.label : undefined"
           :to="item.to"
+          @click="isMobileMenuOpen = false"
         >
           <span class="app-shell__nav-icon" aria-hidden="true">{{ item.icon }}</span>
           <span class="app-shell__nav-label">{{ item.label }}</span>
@@ -37,6 +47,7 @@
             :aria-label="isCollapsed ? item.label : undefined"
             :title="isCollapsed ? item.label : undefined"
             :to="item.to"
+            @click="isMobileMenuOpen = false"
           >
             <span class="app-shell__nav-icon" aria-hidden="true">{{ item.icon }}</span>
             <span class="app-shell__nav-label">{{ item.label }}</span>
@@ -58,7 +69,7 @@
         </div>
       </header>
 
-      <main class="app-shell__content">
+      <main id="main-content" class="app-shell__content" tabindex="-1">
         <slot />
       </main>
     </div>
@@ -87,6 +98,8 @@ defineEmits(["logout"]);
 const sidebarStorageKey = "parking-app-sidebar-collapsed";
 const isAdmin = computed(() => props.user?.role === "admin");
 const isCollapsed = ref(localStorage.getItem(sidebarStorageKey) === "true");
+const isMobileMenuOpen = ref(false);
+const mobileMenuButton = ref(null);
 const userRef = computed(() => props.user);
 const { canOfferSpot } = useOwnedSpotCapability(userRef);
 const parkingNavItems = [
@@ -116,6 +129,12 @@ const adminNavItems = [
 
 function toggleSidebar() {
   isCollapsed.value = !isCollapsed.value;
+}
+
+function closeMobileMenu() {
+  if (!isMobileMenuOpen.value) return;
+  isMobileMenuOpen.value = false;
+  mobileMenuButton.value?.focus();
 }
 
 watch(isCollapsed, (value) => {

@@ -17,8 +17,8 @@ This document summarizes the architecture, implemented workflows, operational co
 Backend code is organized around separated FastAPI routers, services, repositories, models, schemas, database configuration, security utilities, and command modules.
 
 - `backend/app/main.py`: FastAPI application setup, middleware, CORS, security headers, and router registration.
-- `backend/app/api/routes`: API routers for auth, health, parking workflows, admin workflows, overrides, audit logs, and reports.
-- `backend/app/api/dependencies`: authentication and authorization dependencies, including current-user and role checks.
+- `backend/app/routers`: API routers for auth, health, parking workflows, admin workflows, overrides, audit logs, and reports.
+- `backend/app/dependencies`: authentication and authorization dependencies, including current-user and role checks.
 - `backend/app/services`: business behavior for authentication, parking availability, applications, reservations, assignment, ranking, overrides, audit logging, reports, and seeding support.
 - `backend/app/repositories`: database-focused access layer.
 - `backend/app/models`: SQLAlchemy models and enums.
@@ -35,6 +35,8 @@ Frontend code follows a Vue/Vite structure.
 - `frontend/src/components`: reusable UI pieces. `PersonCell` provides the shared name/email/reference presentation, and `AuditDecisionDetails` provides readable audit payload summaries with raw JSON retained under a collapsed technical view. `AppLayout` owns the collapsible sidebar state through `localStorage` key `parking-app-sidebar-collapsed`.
 - `frontend/src/composables/useOwnedSpotCapability.js`: derives the offer-navigation capability from the authenticated role and the owner-scoped `GET /parking-spots/mine` response. Backend ownership checks remain authoritative.
 - `frontend/nginx.conf`: static serving and Vue Router history fallback for Docker Compose.
+
+The September 2026 frontend review keeps the blue/white shell and existing APIs. Mobile/tablet navigation uses an independent Menu disclosure; desktop collapse still persists. Dashboard task groups separate personal, owner, and admin responsibilities. Mobile table cells stack their label and full content, retaining native table headers for accessibility. Override feedback belongs to its submitting form, and reference links open separately to preserve entered values. The screenshot workflow also checks eight required pages at 390, 768, and 1280 pixels and saves review captures under ignored `frontend/test-results/` directories.
 
 ## Implemented Domain Workflows
 

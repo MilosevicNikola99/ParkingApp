@@ -1,10 +1,11 @@
-import { mount } from "@vue/test-utils";
+import { mount, RouterLinkStub } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 
 import AdminOverrideForm from "./AdminOverrideForm.vue";
 
 function mountForm(mode) {
   return mount(AdminOverrideForm, {
+    global: { stubs: { RouterLink: RouterLinkStub } },
     props: {
       mode,
       title: `${mode} override`,
@@ -50,6 +51,15 @@ describe("AdminOverrideForm", () => {
     expect(wrapper.text()).toContain("Find references first: open Requests");
     expect(wrapper.text()).toContain("Request ID uses an existing request");
     expect(wrapper.text()).toContain("Reason is required and appears in audit history");
+  });
+
+  it("links to reference lists without leaving entered values and describes the offer field", () => {
+    const wrapper = mountForm("manual");
+    const links = wrapper.findAllComponents(RouterLinkStub);
+    expect(links.map((link) => link.props("to"))).toEqual(["/admin/parking-applications", "/admin/reservations"]);
+    for (const link of links) expect(link.attributes("target")).toBe("_blank");
+    const input = wrapper.get('input[name="manual-availability-id"]');
+    expect(wrapper.get(`#${input.attributes("aria-describedby")}`).text()).toContain("Offer #");
   });
 
   it("emits applicant ID replacement values after validation", async () => {

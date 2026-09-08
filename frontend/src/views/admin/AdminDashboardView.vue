@@ -12,45 +12,54 @@
     <section class="admin-dashboard-groups" aria-label="Admin modules">
       <div class="dashboard-group">
         <div class="dashboard-group__header">
-          <p>People and teams</p>
+          <h2>People and teams</h2>
           <span>Setup</span>
         </div>
         <div class="dashboard-grid dashboard-grid--admin-group">
-          <DashboardCard title="Teams" metric="Teams" label="Create and maintain company teams for assignment context." to="/admin/teams" />
-          <DashboardCard title="Users" metric="Users" label="Manage access, roles, team membership, and account status." to="/admin/users" />
+          <DashboardCard heading-tag="h3" title="Teams" metric="Teams" label="Create and maintain company teams for assignment context." to="/admin/teams" />
+          <DashboardCard heading-tag="h3" title="Users" metric="Users" label="Manage access, roles, team membership, and account status." to="/admin/users" />
         </div>
       </div>
 
       <div class="dashboard-group">
         <div class="dashboard-group__header">
-          <p>Parking spots</p>
+          <h2>Parking spots</h2>
           <span>Inventory</span>
         </div>
         <div class="dashboard-grid dashboard-grid--admin-group">
-          <DashboardCard title="Parking spots" metric="Spots" label="Manage spot codes, owners, status, and descriptions." to="/admin/parking-spots" />
+          <DashboardCard heading-tag="h3" title="Parking spots" metric="Spots" label="Manage spot codes, owners, status, and descriptions." to="/admin/parking-spots" />
         </div>
       </div>
 
       <div class="dashboard-group">
         <div class="dashboard-group__header">
-          <p>Operations</p>
+          <h2>Operations</h2>
           <span>Daily work</span>
         </div>
         <div class="dashboard-grid dashboard-grid--admin-group">
-          <DashboardCard title="Requests" metric="Review" label="Inspect employee parking requests and their assignment status." to="/admin/parking-applications" />
-          <DashboardCard title="Reservations" metric="History" label="Review active and historical reservation records." to="/admin/reservations" />
-          <DashboardCard title="Overrides" metric="Override" label="Perform reason-required manual or replacement assignments." to="/admin/overrides" />
+          <DashboardCard heading-tag="h3" title="Requests" metric="Review" label="Inspect employee parking requests and their assignment status." to="/admin/parking-applications" />
+          <DashboardCard heading-tag="h3" title="Reservations" metric="History" label="Review active and historical reservation records." to="/admin/reservations" />
+          <DashboardCard heading-tag="h3" title="Overrides" metric="Override" label="Perform reason-required manual or replacement assignments." to="/admin/overrides" />
         </div>
       </div>
 
       <div class="dashboard-group">
         <div class="dashboard-group__header">
-          <p>Reports and audit</p>
-          <span>Review</span>
+          <h2>Audit</h2>
+          <span>Decision history</span>
         </div>
         <div class="dashboard-grid dashboard-grid--admin-group">
-          <DashboardCard title="Audit logs" metric="Audit" label="Review assignment decisions and override history." to="/admin/audit-logs" />
-          <DashboardCard title="Reports" metric="Reports" label="Monitor summaries and export CSV data." to="/admin/reports" />
+          <DashboardCard heading-tag="h3" title="Audit logs" metric="Audit" label="Review assignment decisions and override history." to="/admin/audit-logs" />
+        </div>
+      </div>
+
+      <div class="dashboard-group">
+        <div class="dashboard-group__header">
+          <h2>Reporting</h2>
+          <span>Operational summaries</span>
+        </div>
+        <div class="dashboard-grid dashboard-grid--admin-group">
+          <DashboardCard heading-tag="h3" title="Reports" metric="Reports" label="Monitor summaries and export CSV data." to="/admin/reports" />
         </div>
       </div>
     </section>

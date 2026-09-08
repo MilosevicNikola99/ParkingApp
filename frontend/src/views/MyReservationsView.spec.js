@@ -1,4 +1,4 @@
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, RouterLinkStub } from "@vue/test-utils";
 import { ref } from "vue";
 import { describe, expect, it, vi } from "vitest";
 
@@ -22,6 +22,15 @@ const AppLayoutStub = {
 };
 
 describe("MyReservationsView", () => {
+  it("links an empty reservation list to the user's requests", async () => {
+    reservationService.listMyReservations.mockResolvedValue([]);
+    const wrapper = mount(MyReservationsView, {
+      global: { stubs: { AppLayout: AppLayoutStub, RouterLink: RouterLinkStub } },
+    });
+    await flushPromises();
+    expect(wrapper.getComponent(RouterLinkStub).props("to")).toBe("/my-applications");
+    expect(wrapper.getComponent(RouterLinkStub).text()).toBe("Review my requests");
+  });
   it("allows only active reservations to be cancelled and prevents duplicate requests", async () => {
     reservationService.listMyReservations.mockResolvedValue([
       {

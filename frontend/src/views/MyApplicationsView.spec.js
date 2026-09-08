@@ -1,4 +1,4 @@
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, RouterLinkStub } from "@vue/test-utils";
 import { ref } from "vue";
 import { describe, expect, it, vi } from "vitest";
 
@@ -18,6 +18,15 @@ vi.mock("@/composables/useAuthenticatedPage", () => ({
 import MyApplicationsView from "./MyApplicationsView.vue";
 
 describe("MyApplicationsView", () => {
+  it("links an empty request list to available spots", async () => {
+    applicationService.listMyApplications.mockResolvedValue([]);
+    const wrapper = mount(MyApplicationsView, {
+      global: { stubs: { AppLayout: { template: "<div><slot /></div>" }, RouterLink: RouterLinkStub } },
+    });
+    await flushPromises();
+    expect(wrapper.getComponent(RouterLinkStub).props("to")).toBe("/availabilities");
+    expect(wrapper.getComponent(RouterLinkStub).text()).toBe("Browse available spots");
+  });
   it("presents requests with spot context and secondary references", async () => {
     applicationService.listMyApplications.mockResolvedValue([{
       id: 17,

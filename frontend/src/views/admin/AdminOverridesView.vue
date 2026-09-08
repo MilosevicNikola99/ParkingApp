@@ -9,9 +9,6 @@
       <strong>Before you submit:</strong> Find the request and reservation in the admin lists first. Manual assignment creates a reservation from a waiting request on an open parking offer. Replacement changes the active reservation for an assigned offer.
     </section>
 
-    <AlertMessage :message="errorMessage" />
-    <AlertMessage :message="successMessage" variant="success" />
-
     <div class="admin-action-grid">
       <div>
         <AdminOverrideForm
@@ -21,7 +18,12 @@
           submit-label="Assign request"
           title="Manual assignment"
           @submit="submitManualOverride"
-        />
+        >
+          <template #feedback>
+            <AlertMessage :message="manualError" />
+            <AlertMessage :message="manualSuccess" variant="success" />
+          </template>
+        </AdminOverrideForm>
         <ReservationSummaryCard :reservation="manualReservation" />
       </div>
 
@@ -33,7 +35,12 @@
           submit-label="Replace reservation"
           title="Replacement assignment"
           @submit="submitReplacementOverride"
-        />
+        >
+          <template #feedback>
+            <AlertMessage :message="replacementError" />
+            <AlertMessage :message="replacementSuccess" variant="success" />
+          </template>
+        </AdminOverrideForm>
         <ReservationSummaryCard :reservation="replacementReservation" />
       </div>
     </div>
@@ -60,22 +67,25 @@ const manualReservation = ref(null);
 const replacementReservation = ref(null);
 const manualLoading = ref(false);
 const replacementLoading = ref(false);
-const errorMessage = ref("");
-const successMessage = ref("");
+const manualError = ref("");
+const manualSuccess = ref("");
+const replacementError = ref("");
+const replacementSuccess = ref("");
 
 async function submitManualOverride({ availabilityId, applicationId, reason }) {
   if (manualLoading.value) {
     return;
   }
 
-  errorMessage.value = "";
-  successMessage.value = "";
+  manualError.value = "";
+  manualSuccess.value = "";
+  manualReservation.value = null;
   manualLoading.value = true;
   try {
     manualReservation.value = await manualOverrideAssignment(availabilityId, applicationId, reason);
-    successMessage.value = `Reservation #${manualReservation.value.id} created by manual override.`;
+    manualSuccess.value = `Reservation #${manualReservation.value.id} created by manual override.`;
   } catch (error) {
-    errorMessage.value = getApiErrorMessage(error, "The manual assignment could not be completed.");
+    manualError.value = getApiErrorMessage(error, "The manual assignment could not be completed.");
   } finally {
     manualLoading.value = false;
   }
@@ -86,15 +96,16 @@ async function submitReplacementOverride({ availabilityId, applicationId, applic
     return;
   }
 
-  errorMessage.value = "";
-  successMessage.value = "";
+  replacementError.value = "";
+  replacementSuccess.value = "";
+  replacementReservation.value = null;
   replacementLoading.value = true;
   try {
     const selector = applicantId === undefined ? applicationId : { applicantId };
     replacementReservation.value = await replaceReservationAssignment(availabilityId, selector, reason);
-    successMessage.value = `Reservation #${replacementReservation.value.id} replaced successfully.`;
+    replacementSuccess.value = `Reservation #${replacementReservation.value.id} replaced successfully.`;
   } catch (error) {
-    errorMessage.value = getApiErrorMessage(error, "The replacement assignment could not be completed.");
+    replacementError.value = getApiErrorMessage(error, "The replacement assignment could not be completed.");
   } finally {
     replacementLoading.value = false;
   }
