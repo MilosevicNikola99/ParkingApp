@@ -4,7 +4,12 @@
     <aside class="app-shell__sidebar" @keydown.esc="closeMobileMenu">
       <div class="app-shell__brand-row">
         <RouterLink class="app-shell__brand" to="/dashboard" :aria-label="isCollapsed ? 'Parking dashboard' : undefined">
-          <span class="app-shell__brand-mark" aria-hidden="true">P</span>
+          <span class="app-shell__brand-mark" aria-hidden="true">
+            <svg class="app-shell__brand-logo" viewBox="0 0 32 32" focusable="false">
+              <path class="app-shell__brand-sign" d="M9 26V6h8.1a6.6 6.6 0 0 1 0 13.2H9" />
+              <path class="app-shell__brand-road" d="M9 19.2h8.1" />
+            </svg>
+          </span>
           <span class="app-shell__brand-text">Parking</span>
         </RouterLink>
         <button

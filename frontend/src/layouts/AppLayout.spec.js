@@ -41,6 +41,15 @@ describe("AppLayout navigation", () => {
     expect(employeeLayout.text()).not.toContain("Offer my spot");
   });
 
+  it("renders a distinct decorative brand mark and accessible dashboard link", () => {
+    const wrapper = mountLayout({ first_name: "Eli", last_name: "Employee", role: "employee" });
+    const brand = wrapper.get(".app-shell__brand");
+
+    expect(brand.text()).toBe("Parking");
+    expect(brand.get(".app-shell__brand-logo").attributes("aria-hidden")).toBeUndefined();
+    expect(brand.get(".app-shell__brand-mark").attributes("aria-hidden")).toBe("true");
+  });
+
   it("shows normal and owner workflows to parking owners", async () => {
     const wrapper = mountLayout({ id: 3, first_name: "Olivia", last_name: "Owner", role: "parking_owner" });
     await flushPromises();
@@ -97,6 +106,8 @@ describe("AppLayout navigation", () => {
     expect(localStorage.getItem("parking-app-sidebar-collapsed")).toBe("true");
     expect(wrapper.get('a[aria-label="Dashboard"]').attributes("title")).toBe("Dashboard");
     expect(wrapper.get('a[aria-label="Dashboard"] .app-shell__nav-label').text()).toBe("Dashboard");
+    expect(wrapper.get('.app-shell__brand[aria-label="Parking dashboard"]').exists()).toBe(true);
+    expect(wrapper.get(".app-shell__brand-logo").exists()).toBe(true);
   });
 
   it("identifies the active route when expanded and collapsed", async () => {

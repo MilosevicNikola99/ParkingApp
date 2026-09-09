@@ -103,38 +103,44 @@
         </div>
       </section>
 
-      <section class="report-table-grid">
-        <div class="workspace-section report-table-section">
+      <section class="report-breakdown-grid" aria-label="Report rankings and audit activity">
+        <div class="workspace-section report-breakdown-panel">
           <div class="workspace-section__header"><h2>Top reserved users</h2></div>
-          <EmptyState v-if="topUsers.length === 0" action-label="Reservations will appear here after assignments are created." title="No reservation winners" />
-          <div v-else class="data-table-wrap">
-            <table class="data-table report-table">
-              <thead><tr><th>User</th><th>Reservations</th></tr></thead>
-              <tbody><tr v-for="user in topUsers" :key="user.user_id"><td><PersonCell :fallback-id="user.user_id" show-reference :user="userById(user.user_id)" /></td><td>{{ user.reservation_count }}</td></tr></tbody>
-            </table>
-          </div>
+          <div class="report-list-header"><span>User</span><span>Reservations</span></div>
+          <EmptyState v-if="topUsers.length === 0" action-label="Reservations will appear here after assignments are created." title="No reservation data yet" />
+          <ul v-else class="report-compact-list" aria-label="Top reserved users ranking">
+            <li v-for="user in topUsers" :key="user.user_id" class="report-compact-item">
+              <PersonCell :fallback-id="user.user_id" :user="userById(user.user_id)" />
+              <strong class="report-compact-count">{{ user.reservation_count }}</strong>
+            </li>
+          </ul>
         </div>
 
-        <div class="workspace-section report-table-section">
+        <div class="workspace-section report-breakdown-panel">
           <div class="workspace-section__header"><h2>Parking spot usage</h2></div>
-          <EmptyState v-if="parkingSpotUsage.length === 0" action-label="Parking spot usage appears after reservations are created." title="No parking spot usage" />
-          <div v-else class="data-table-wrap">
-            <table class="data-table report-table">
-              <thead><tr><th>Parking spot</th><th>Reservations</th></tr></thead>
-              <tbody><tr v-for="spot in parkingSpotUsage" :key="spot.parking_spot_id"><td class="data-table__id">#{{ spot.parking_spot_id }}</td><td>{{ spot.reservation_count }}</td></tr></tbody>
-            </table>
-          </div>
+          <div class="report-list-header"><span>Parking spot</span><span>Reservations</span></div>
+          <EmptyState v-if="parkingSpotUsage.length === 0" action-label="Parking spot usage appears after reservations are created." title="No parking spot usage yet" />
+          <ul v-else class="report-compact-list" aria-label="Parking spot usage ranking">
+            <li v-for="spot in parkingSpotUsage" :key="spot.parking_spot_id" class="report-compact-item">
+              <span class="report-spot-reference">
+                <strong>{{ parkingSpotLabel(spot.parking_spot_id) }}</strong>
+                <small v-if="parkingSpotDetail(spot.parking_spot_id)">{{ parkingSpotDetail(spot.parking_spot_id) }}</small>
+              </span>
+              <strong class="report-compact-count">{{ spot.reservation_count }}</strong>
+            </li>
+          </ul>
         </div>
 
-        <div class="workspace-section report-table-section">
+        <div class="workspace-section report-breakdown-panel">
           <div class="workspace-section__header"><h2>Assignment audit triggers</h2></div>
-          <EmptyState v-if="summary.audit_trigger_summary.length === 0" action-label="Audit activity appears after assignment runs or overrides." title="No audit activity" />
-          <div v-else class="data-table-wrap">
-            <table class="data-table report-table">
-              <thead><tr><th>Trigger source</th><th>Events</th></tr></thead>
-              <tbody><tr v-for="item in summary.audit_trigger_summary" :key="item.trigger_source"><td><StatusBadge :status="item.trigger_source" /></td><td>{{ item.count }}</td></tr></tbody>
-            </table>
-          </div>
+          <div class="report-list-header"><span>Trigger source</span><span>Events</span></div>
+          <EmptyState v-if="summary.audit_trigger_summary.length === 0" action-label="Audit activity appears after assignment runs or overrides." title="No audit trigger data yet" />
+          <ul v-else class="report-trigger-list" aria-label="Assignment audit trigger counts">
+            <li v-for="item in summary.audit_trigger_summary" :key="item.trigger_source">
+              <StatusBadge :status="item.trigger_source" />
+              <strong class="report-compact-count">{{ item.count }}</strong>
+            </li>
+          </ul>
         </div>
       </section>
     </template>
@@ -156,6 +162,7 @@ import DashboardCard from "@/components/dashboard/DashboardCard.vue";
 import { useAuthenticatedPage } from "@/composables/useAuthenticatedPage";
 import AppLayout from "@/layouts/AppLayout.vue";
 import { getApiErrorMessage } from "@/services/apiErrors";
+import { listAdminParkingSpots } from "@/services/adminParkingSpotService";
 import {
   downloadReportCsv,
   getParkingSpotUsage,
@@ -168,6 +175,7 @@ const { currentUser, handleLogout } = useAuthenticatedPage();
 const summary = ref(null);
 const topUsers = ref([]);
 const parkingSpotUsage = ref([]);
+const parkingSpots = ref([]);
 const users = ref([]);
 const errorMessage = ref("");
 const isLoading = ref(true);
@@ -198,6 +206,23 @@ function userById(userId) {
   return users.value.find((user) => user.id === userId) || null;
 }
 
+function parkingSpotById(parkingSpotId) {
+  return parkingSpots.value.find((spot) => spot.id === parkingSpotId) || null;
+}
+
+function parkingSpotLabel(parkingSpotId) {
+  const spot = parkingSpotById(parkingSpotId);
+  return spot?.code || spot?.location || spot?.description || `Spot #${parkingSpotId}`;
+}
+
+function parkingSpotDetail(parkingSpotId) {
+  const spot = parkingSpotById(parkingSpotId);
+  if (!spot) return "";
+  if (spot.code) return spot.location || spot.description || "";
+  if (spot.location) return spot.description || "";
+  return "";
+}
+
 async function loadReports() {
   errorMessage.value = validateFilters();
   if (errorMessage.value) return;
@@ -205,11 +230,12 @@ async function loadReports() {
   isLoading.value = true;
   try {
     const params = reportParams();
-    [summary.value, topUsers.value, parkingSpotUsage.value, users.value] = await Promise.all([
+    [summary.value, topUsers.value, parkingSpotUsage.value, users.value, parkingSpots.value] = await Promise.all([
       getSummaryReport(params),
       getTopUsers(params),
       getParkingSpotUsage(params),
       listAdminUsers({ limit: 1000 }),
+      listAdminParkingSpots({ limit: 1000 }),
     ]);
   } catch (error) {
     errorMessage.value = getApiErrorMessage(error, "Operational reports could not be loaded.");

@@ -807,26 +807,115 @@ p {
   gap: var(--space-3);
 }
 
-.report-table-grid {
+.report-breakdown-grid {
   display: grid;
   gap: var(--space-6);
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
 }
 
-.report-table-section {
+.report-breakdown-panel {
   margin-inline: 0;
+  min-width: 0;
   padding-inline: var(--space-5);
 }
 
-.report-table {
-  min-width: 100%;
+.report-breakdown-panel .workspace-section__header {
+  margin-bottom: var(--space-3);
 }
 
-.report-table-section .empty-state {
+.report-list-header {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  display: flex;
+  font-size: 0.7rem;
+  font-weight: 800;
+  justify-content: space-between;
+  letter-spacing: 0.04em;
+  padding: 0 0 var(--space-2);
+  text-transform: uppercase;
+}
+
+.report-breakdown-panel .empty-state {
   border: 0;
   margin: 0;
   min-height: 120px;
   padding: var(--space-5);
+}
+
+.report-compact-list,
+.report-trigger-list {
+  list-style: none;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.report-compact-item,
+.report-trigger-list li {
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+  min-width: 0;
+  padding: var(--space-3) 0;
+}
+
+.report-compact-item:first-child,
+.report-trigger-list li:first-child {
+  border-top: 0;
+  padding-top: var(--space-2);
+}
+
+.report-compact-item > :first-child,
+.report-trigger-list li > :first-child {
+  min-width: 0;
+}
+
+.report-compact-count {
+  color: var(--color-blue-900);
+  flex: 0 0 auto;
+  font-size: 1rem;
+  line-height: 1;
+  text-align: right;
+}
+
+.report-spot-reference {
+  display: grid;
+  gap: 2px;
+}
+
+.report-spot-reference strong {
+  color: var(--color-gray-900);
+  overflow-wrap: anywhere;
+}
+
+.report-spot-reference small {
+  color: var(--color-text-muted);
+}
+
+.report-trigger-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.report-trigger-list li {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.report-trigger-list li:first-child {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-3);
+}
+
+.report-trigger-list .status-badge {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .confirm-action__prompt {
@@ -1201,7 +1290,7 @@ a.dashboard-card:hover {
 
   .report-summary-grid,
   .report-lifecycle-grid,
-  .report-table-grid {
+  .report-breakdown-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1235,6 +1324,10 @@ a.dashboard-card:hover {
     padding-inline: var(--space-5);
   }
 
+  .report-breakdown-panel {
+    margin-inline: 0;
+  }
+
   .availability-form {
     grid-template-columns: 1fr;
   }
@@ -1260,7 +1353,7 @@ a.dashboard-card:hover {
 
   .report-summary-grid,
   .report-lifecycle-grid,
-  .report-table-grid {
+  .report-breakdown-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -1310,18 +1403,18 @@ a.dashboard-card:hover {
 .app-shell__brand-row {
   align-items: center;
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-4);
   justify-content: space-between;
+  min-height: 40px;
 }
 
 .app-shell__brand {
   align-items: center;
   display: inline-flex;
-  gap: var(--space-3);
+  gap: 11px;
   min-width: 0;
 }
 
-.app-shell__brand-mark,
 .app-shell__nav-icon {
   align-items: center;
   background: rgb(255 255 255 / 12%);
@@ -1333,7 +1426,40 @@ a.dashboard-card:hover {
   font-weight: 900;
   height: 28px;
   justify-content: center;
+  position: relative;
   width: 28px;
+}
+
+.app-shell__brand-mark {
+  align-items: center;
+  background: linear-gradient(145deg, #ffffff 0%, #dbeafe 100%);
+  border: 1px solid rgb(255 255 255 / 65%);
+  border-radius: 11px;
+  box-shadow: 0 5px 14px rgb(8 20 52 / 24%), inset 0 1px 0 rgb(255 255 255 / 80%);
+  color: #1d4ed8;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.app-shell__brand-logo {
+  fill: none;
+  height: 25px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  width: 25px;
+}
+
+.app-shell__brand-sign {
+  stroke-width: 3.2;
+}
+
+.app-shell__brand-road {
+  opacity: 0.55;
+  stroke-width: 2;
 }
 
 .app-shell__nav-icon {
@@ -1352,10 +1478,22 @@ a.dashboard-card:hover {
 .app-shell__brand-text,
 .app-shell__nav .app-shell__nav-icon,
 .app-shell__nav .app-shell__nav-label {
-  color: inherit;
   margin: 0;
   opacity: 1;
   padding: 0;
+}
+
+.app-shell__brand-text,
+.app-shell__nav .app-shell__nav-icon,
+.app-shell__nav .app-shell__nav-label {
+  color: inherit;
+}
+
+.app-shell__brand-text {
+  font-size: 1.3rem;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  line-height: 1;
 }
 
 .app-shell__nav .app-shell__nav-icon {
@@ -1373,32 +1511,33 @@ a.dashboard-card:hover {
 
 .app-shell__collapse {
   align-items: center;
-  background: rgb(255 255 255 / 10%);
-  border: 1px solid rgb(219 234 254 / 26%);
-  border-radius: var(--radius-sm);
-  color: var(--color-white);
+  background: transparent;
+  border: 1px solid rgb(219 234 254 / 18%);
+  border-radius: 999px;
+  color: #dbeafe;
   cursor: pointer;
   display: inline-flex;
   flex: 0 0 auto;
-  font-weight: 900;
-  height: 32px;
+  height: 28px;
   justify-content: center;
-  width: 32px;
+  width: 28px;
 }
 
 .app-shell__collapse-icon {
   fill: none;
-  height: 18px;
+  height: 16px;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 2;
-  width: 18px;
+  stroke-width: 1.8;
+  width: 16px;
 }
 
 .app-shell__collapse:hover,
 .app-shell__collapse:focus-visible {
-  background: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 12%);
+  border-color: rgb(219 234 254 / 42%);
+  color: var(--color-white);
 }
 
 .app-shell__nav-link {
@@ -1471,7 +1610,22 @@ a.dashboard-card:hover {
 
 .app-shell--collapsed .app-shell__brand-row {
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 18px;
+  position: relative;
+}
+
+.app-shell--collapsed .app-shell__brand {
+  justify-content: center;
+}
+
+.app-shell--collapsed .app-shell__collapse::before {
+  background: rgb(219 234 254 / 22%);
+  content: "";
+  height: 10px;
+  left: 50%;
+  position: absolute;
+  top: -15px;
+  width: 1px;
 }
 
 .app-shell--collapsed .app-shell__nav {

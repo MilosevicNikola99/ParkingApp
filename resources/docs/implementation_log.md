@@ -9714,3 +9714,71 @@ The user guide wording already describes label-based navigation and does not men
 Status: READY.
 
 Meaningful local icons replace all navigation letter placeholders, expanded and collapsed states are clear and aligned, mobile/accessibility behavior is preserved, targeted unit/build/audit/browser/screenshot checks pass, and the unrelated pre-existing `.idea/vcs.xml` remains untouched.
+
+## Sidebar Brand Header Polish - 2026-09-09
+
+### Scope And Visual Change
+
+Polished only the sidebar brand/header and collapse control. Replaced the remaining plain `P` badge with a local parking-sign SVG inside a distinctive softly shaded brand tile, refined the Parking wordmark spacing and typography, and changed the collapse control into a smaller circular utility button. In collapsed desktop mode the logo and expand control are independently centered with deliberate spacing and a subtle visual connector, so they read as a brand plus secondary control rather than two matching square badges.
+
+The dashboard link remains accessible as **Parking dashboard** when collapsed. The collapse/expand labels, `aria-pressed` state, localStorage persistence, keyboard focus, routes, navigation icons and labels, role/capability filtering, mobile Menu behavior, and all page/backend behavior are unchanged.
+
+### Files Changed
+
+- `frontend/src/layouts/AppLayout.vue`
+- `frontend/src/layouts/AppLayout.spec.js`
+- `frontend/src/styles/main.css`
+- `frontend/e2e/mvp-smoke.spec.js`
+- The existing user-guide PNGs under `resources/docs/images/user_guide`
+- `resources/docs/implementation_log.md`
+
+The user guide, manual QA checklist, and developer handoff do not describe the old badge appearance and remain accurate, so no prose edits were required.
+
+### Verification
+
+- Frontend unit tests: 22 files, 81 tests passed. Focused coverage now checks the decorative brand SVG, visible app name, collapsed accessible brand link, collapse toggle, persistence, and the unchanged navigation matrix.
+- Frontend production build: passed; Vite transformed 135 modules.
+- Full `npm audit`: passed with 0 vulnerabilities.
+- Disposable Chromium MVP smoke: 6 passed. Added geometry checks for expanded logo/control vertical alignment and collapsed logo/control horizontal centering; existing navigation, focus, persistence, active state, Help, and 390x844 mobile checks remain passing.
+- User-guide screenshot workflow: 4 passed; 16 screenshots regenerated. Visual review covered expanded employee/admin headers and the 390x844 mobile header.
+- Backend tests were not run because no backend file changed.
+
+### Completion Classification
+
+Status: READY.
+
+The brand header now reads as a coherent product identity in expanded and collapsed states, the lighter chevron remains discoverable and accessible, behavior is unchanged, and all targeted verification passes. The unrelated pre-existing `.idea/vcs.xml` remains untouched.
+
+### Brand Mark Contrast Follow-Up - 2026-09-09
+
+Corrected the legacy structured-span reset so it no longer overrides the brand mark's intended `#1d4ed8` color with inherited white. The light badge, SVG geometry, header layout, hover/focus behavior, accessibility, and navigation behavior remain unchanged. Chromium now asserts the dark-blue computed color in both expanded and collapsed states. Frontend tests (81), production build, `npm audit` (0 vulnerabilities), MVP smoke (6), and screenshot workflow (4; 16 images regenerated) all passed; visual review confirms the `P` is clearly legible on desktop and mobile.
+
+## Reports Summary Layout Polish - 2026-09-09
+
+### Scope And Layout Decision
+
+Replaced only the three small table presentations on the Reports page—**Top reserved users**, **Parking spot usage**, and **Assignment audit triggers**—with compact semantic lists. The new layouts remove table wrappers and their unnecessary horizontal scrollbars, reduce empty card space, keep counts aligned, and wrap long identity text naturally. Existing filters, report requests/calculations, lifecycle summaries, CSV exports, navigation, and backend behavior are unchanged.
+
+- Top users reuse the existing stacked `PersonCell` name/email presentation. The technical user ID appears only as a fallback when the identity lookup is unavailable.
+- Parking usage resolves each report ID through the existing admin parking-spot lookup, showing the spot code first and location or description as supporting context. `Spot #ID` remains the fallback when no display data is available.
+- Audit sources render as readable status badges with compact numeric event counts.
+- Each card has a compact column header, while repeated row-level unit and helper labels have been removed. Focused empty-state wording remains present for each list.
+
+The report API remains unchanged and continues to return `parking_spot_id` and `reservation_count`. The page performs a read-only display lookup through the existing `/admin/parking-spots` endpoint, so no backend or report-contract change was required.
+
+### Files Changed And Verification
+
+- Changed `frontend/src/views/admin/AdminReportsView.vue`, its focused test, Reports-only styles in `frontend/src/styles/main.css`, and responsive assertions in `frontend/e2e/user-guide-screenshots.spec.js`.
+- Frontend unit tests: 22 files, 83 tests passed, including compact headers, human-readable user/spot display, spot-ID fallback, and empty-state coverage. Existing filter and CSV-download tests remain passing.
+- Frontend production build: passed; Vite transformed 135 modules. Full `npm audit`: 0 vulnerabilities.
+- Disposable Chromium MVP smoke: 6 passed, including the existing Reports route check.
+- Screenshot workflow: 4 passed and 16 guide images regenerated. Reports now asserts human-readable identity/spot output, absence of repeated helper text, compact-list/no-table rendering, and grid/document overflow behavior at 390, 768, and 1280px.
+- The first responsive run exposed the generic mobile workspace section's 20px negative full-bleed margin on the new cards. A Reports-scoped mobile override corrected it; the final run passed at all widths.
+- Visual review confirmed compact desktop/tablet/mobile cards, readable wrapped email text, unclipped badges, usable filters/exports, and no summary-card scrollbars.
+- No backend file changed, so backend tests were not run.
+
+### Completion Classification
+
+Status: READY.
+
+All three report breakdowns use compact headers and human-readable values without unnecessary horizontal scrolling. User and spot IDs remain safe fallbacks, filters and exports are unchanged, targeted automated and visual verification passes, and no backend or unrelated product code was changed.

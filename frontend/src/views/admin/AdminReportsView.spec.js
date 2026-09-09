@@ -9,9 +9,11 @@ const reportService = vi.hoisted(() => ({
   getTopUsers: vi.fn(),
 }));
 const userService = vi.hoisted(() => ({ listAdminUsers: vi.fn() }));
+const parkingSpotService = vi.hoisted(() => ({ listAdminParkingSpots: vi.fn() }));
 
 vi.mock("@/services/adminReportService", () => reportService);
 vi.mock("@/services/adminUserService", () => userService);
+vi.mock("@/services/adminParkingSpotService", () => parkingSpotService);
 vi.mock("@/composables/useAuthenticatedPage", () => ({
   useAuthenticatedPage: () => ({
     currentUser: ref({ id: 1, first_name: "Ada", last_name: "Admin", role: "admin" }),
@@ -54,6 +56,9 @@ describe("AdminReportsView", () => {
     userService.listAdminUsers.mockResolvedValue([
       { id: 7, first_name: "Erin", last_name: "Employee", email: "erin@example.com" },
     ]);
+    parkingSpotService.listAdminParkingSpots.mockResolvedValue([
+      { id: 9, code: "A-09", location: "East garage", description: "Near the lift" },
+    ]);
   });
 
   it("renders summaries, rankings, audit triggers, and CSV export actions", async () => {
@@ -68,13 +73,24 @@ describe("AdminReportsView", () => {
     expect(wrapper.text()).toContain("Waiting for assignment");
     expect(wrapper.text()).toContain("Not selected");
     expect(wrapper.text()).not.toMatch(/\bPending\b|\bRejected\b/);
-    expect(wrapper.text()).toContain("#7");
+    expect(wrapper.text()).not.toContain("User #7");
     expect(wrapper.text()).toContain("Erin Employee");
     expect(wrapper.text()).toContain("erin@example.com");
-    expect(wrapper.text()).toContain("#9");
+    expect(wrapper.text()).toContain("A-09");
+    expect(wrapper.text()).toContain("East garage");
+    expect(wrapper.text()).not.toContain("Spot #9");
+    expect(wrapper.text()).not.toContain("Parking spot reference");
+    expect(wrapper.findAll(".report-list-header").map((header) => header.text())).toEqual([
+      "UserReservations",
+      "Parking spotReservations",
+      "Trigger sourceEvents",
+    ]);
     expect(wrapper.text()).toContain("Scheduled");
     expect(wrapper.text()).toContain("Export reservations");
     expect(wrapper.text()).toContain("Export audit logs");
+    expect(wrapper.findAll(".report-compact-list")).toHaveLength(2);
+    expect(wrapper.find(".report-trigger-list").exists()).toBe(true);
+    expect(wrapper.find(".report-breakdown-grid table").exists()).toBe(false);
   });
 
   it("submits created-date filters to all report endpoints", async () => {
@@ -91,6 +107,7 @@ describe("AdminReportsView", () => {
     expect(reportService.getTopUsers).toHaveBeenLastCalledWith(params);
     expect(reportService.getParkingSpotUsage).toHaveBeenLastCalledWith(params);
     expect(userService.listAdminUsers).toHaveBeenLastCalledWith({ limit: 1000 });
+    expect(parkingSpotService.listAdminParkingSpots).toHaveBeenLastCalledWith({ limit: 1000 });
   });
 
   it("downloads CSV using the active filters", async () => {
@@ -105,5 +122,31 @@ describe("AdminReportsView", () => {
     expect(reportService.downloadReportCsv).toHaveBeenCalledWith("reservations", {
       date_from: "2026-06-01",
     });
+  });
+
+  it("keeps intentional empty states for all compact report sections", async () => {
+    reportService.getTopUsers.mockResolvedValue([]);
+    reportService.getParkingSpotUsage.mockResolvedValue([]);
+    reportService.getSummaryReport.mockResolvedValue({ ...summary, audit_trigger_summary: [] });
+
+    const wrapper = mountReports();
+    await flushPromises();
+
+    expect(wrapper.text()).toContain("No reservation data yet");
+    expect(wrapper.text()).toContain("No parking spot usage yet");
+    expect(wrapper.text()).toContain("No audit trigger data yet");
+    expect(wrapper.findAll(".report-compact-list")).toHaveLength(0);
+    expect(wrapper.find(".report-trigger-list").exists()).toBe(false);
+    expect(wrapper.findAll("button").some((button) => button.text() === "Export reservations")).toBe(true);
+  });
+
+  it("falls back to a spot reference only when display data is unavailable", async () => {
+    parkingSpotService.listAdminParkingSpots.mockResolvedValue([]);
+
+    const wrapper = mountReports();
+    await flushPromises();
+
+    expect(wrapper.text()).toContain("Spot #9");
+    expect(wrapper.text()).not.toContain("Parking spot reference");
   });
 });

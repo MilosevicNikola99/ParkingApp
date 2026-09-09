@@ -72,6 +72,27 @@ async function reviewResponsivePages(page, routes, testInfo) {
           await expect(details).not.toHaveAttribute("open", "");
         }
       }
+      if (route === "/admin/reports") {
+        await expect(page.getByRole("list", { name: "Top reserved users ranking" })).toBeVisible();
+        await expect(page.getByRole("list", { name: "Parking spot usage ranking" })).toBeVisible();
+        await expect(page.getByRole("list", { name: "Assignment audit trigger counts" })).toBeVisible();
+        const reportLayout = await page.locator(".report-breakdown-grid").evaluate((grid) => ({
+          clientWidth: grid.clientWidth,
+          scrollWidth: grid.scrollWidth,
+          overflowing: [...grid.querySelectorAll("*")]
+            .filter((element) => element.scrollWidth > element.clientWidth)
+            .map((element) => ({
+              className: element.className,
+              clientWidth: element.clientWidth,
+              scrollWidth: element.scrollWidth,
+              tagName: element.tagName,
+            })),
+        }));
+        expect(
+          reportLayout.scrollWidth,
+          `report breakdowns at ${width}px: ${JSON.stringify(reportLayout)}`,
+        ).toBeLessThanOrEqual(reportLayout.clientWidth);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), `${route} at ${width}px`).toBe(true);
       await page.mouse.move(0, 0);
       await page.screenshot({ path: testInfo.outputPath(`review-${route.replaceAll("/", "-")}-${width}.png`), fullPage: true });
@@ -263,12 +284,21 @@ test.describe.serial("user guide screenshots", () => {
 
     await page.goto("/admin/reports");
     await expect(page.getByRole("region", { name: "Operational report summaries" })).toBeVisible();
+    const topUsers = page.getByRole("list", { name: "Top reserved users ranking" });
+    const spotUsage = page.getByRole("list", { name: "Parking spot usage ranking" });
+    await expect(topUsers).toBeVisible();
+    await expect(topUsers).not.toContainText(/User #\d+/);
+    await expect(spotUsage).toBeVisible();
+    await expect(spotUsage).toContainText(names.spot);
+    await expect(spotUsage).not.toContainText("Parking spot reference");
+    await expect(page.getByRole("list", { name: "Assignment audit trigger counts" })).toBeVisible();
+    await expect(page.locator(".report-breakdown-grid .data-table-wrap")).toHaveCount(0);
     await capture(page, "admin-reports.png");
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/admin/overrides");
     await expect(page.getByRole("button", { name: "Replace reservation" })).toBeVisible();
     await capture(page, "mobile-admin-overrides.png");
-    await reviewResponsivePages(page, ["/admin/parking-applications", "/admin/reservations", "/admin/audit-logs", "/admin/overrides"], testInfo);
+    await reviewResponsivePages(page, ["/admin/parking-applications", "/admin/reservations", "/admin/audit-logs", "/admin/overrides", "/admin/reports"], testInfo);
   });
 });

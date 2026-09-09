@@ -284,6 +284,13 @@ test.describe.serial("MVP browser smoke", () => {
     await expect(activeOverrideLink).toHaveCSS("background-color", "rgb(255, 255, 255)");
     await expect(activeOverrideLink).toHaveCSS("color", "rgb(23, 47, 115)");
     await expect(requestsLink).toHaveCSS("color", "rgb(239, 246, 255)");
+    await expect(page.locator(".app-shell__brand-mark")).toHaveCSS("color", "rgb(29, 78, 216)");
+    const expandedHeaderAlignment = await page.locator(".app-shell__brand-row").evaluate((header) => {
+      const brand = header.querySelector(".app-shell__brand").getBoundingClientRect();
+      const control = header.querySelector(".app-shell__collapse").getBoundingClientRect();
+      return Math.abs((brand.top + brand.height / 2) - (control.top + control.height / 2));
+    });
+    expect(expandedHeaderAlignment).toBeLessThanOrEqual(1);
     expect(await navigation.locator(".navigation-icon").count()).toBe(
       await navigation.locator(".app-shell__nav-link").count(),
     );
@@ -321,6 +328,19 @@ test.describe.serial("MVP browser smoke", () => {
     await expect(page.locator(".app-shell")).toHaveClass(/app-shell--collapsed/);
     await expect(activeOverrideLink).toHaveAttribute("aria-label", "Overrides");
     expect(await page.evaluate(() => localStorage.getItem("parking-app-sidebar-collapsed"))).toBe("true");
+    await expect(page.locator(".app-shell__brand-mark")).toHaveCSS("color", "rgb(29, 78, 216)");
+    const collapsedHeaderAlignment = await page.locator(".app-shell__brand-row").evaluate((header) => {
+      const headerBox = header.getBoundingClientRect();
+      const brandMark = header.querySelector(".app-shell__brand-mark").getBoundingClientRect();
+      const control = header.querySelector(".app-shell__collapse").getBoundingClientRect();
+      const center = (box) => box.left + box.width / 2;
+      return {
+        brandDelta: Math.abs(center(headerBox) - center(brandMark)),
+        controlDelta: Math.abs(center(headerBox) - center(control)),
+      };
+    });
+    expect(collapsedHeaderAlignment.brandDelta).toBeLessThanOrEqual(1);
+    expect(collapsedHeaderAlignment.controlDelta).toBeLessThanOrEqual(1);
     const compactAlignment = await activeOverrideLink.evaluate((link) => {
       const icon = link.querySelector(".app-shell__nav-icon");
       const linkBox = link.getBoundingClientRect();
